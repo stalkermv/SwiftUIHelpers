@@ -24,10 +24,10 @@ Then, add `SwiftUIHelpers` to your target's dependencies:
 Usage
 -----
 
-After installing the library, simply import `SwiftHelpers` at the top of your Swift files and start using the provided extensions and helper functions.
+After installing the library, simply import `SwiftUIHelpers` at the top of your Swift files and start using the provided extensions and helper functions.
 
 ```swift
-import SwiftHelpers
+import SwiftUIHelpers
 ```
 
 ### UIColor
