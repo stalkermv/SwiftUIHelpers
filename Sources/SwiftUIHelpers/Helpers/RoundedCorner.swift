@@ -35,7 +35,7 @@ public extension View {
     ///
     /// - Returns: A view with the specified corners rounded.
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape( RoundedCorner(radius: radius, corners: corners) )
+        clipShape(RoundedCorner(radius: radius, corners: corners) )
     }
 }
 
