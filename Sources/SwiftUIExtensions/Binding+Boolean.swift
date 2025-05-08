@@ -26,7 +26,7 @@ public extension Binding where Value : OptionalProtocol {
     /// ```
     ///
     /// - Note: Setting the boolean binding to `true` will not modify the original binding. You should handle such cases separately.
-    var boolean: Binding<Bool> {
+    @MainActor var boolean: Binding<Bool> {
         Binding<Bool> {
             !wrappedValue.isNone
         } set: { newValue in

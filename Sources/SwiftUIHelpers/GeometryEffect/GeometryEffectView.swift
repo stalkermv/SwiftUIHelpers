@@ -84,7 +84,7 @@ struct GeometryProxyWrapper: ViewModifier {
             }
             
             return result
-        case .named(let name):
+        case .named(_):
             guard let result = proxy?.proxy.frame(in: coordinateSpace) else {
                 return nil
             }
