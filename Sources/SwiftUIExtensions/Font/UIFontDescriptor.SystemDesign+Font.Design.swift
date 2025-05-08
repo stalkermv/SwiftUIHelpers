@@ -5,6 +5,7 @@
 //  Created by Valeriy Malishevskyi on 12.07.2024.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 
 extension UIFontDescriptor.SystemDesign {
@@ -23,3 +24,4 @@ extension UIFontDescriptor.SystemDesign {
         }
     }
 }
+#endif

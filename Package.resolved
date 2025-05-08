@@ -1,0 +1,15 @@
+{
+  "originHash" : "c5fb95fdff90437c4333c655d0426a5868671837302528fd1d4aa634d3d270f7",
+  "pins" : [
+    {
+      "identity" : "swifthelpers",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/stalkermv/SwiftHelpers.git",
+      "state" : {
+        "revision" : "b66dc865eae22bdf7149cfb0e59fbcfd059b719e",
+        "version" : "1.0.2"
+      }
+    }
+  ],
+  "version" : 3
+}

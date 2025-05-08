@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUIExtensions
 
 extension View {
     public func scrollPosition<Element>(selectable array: SelectableArray<Element>) -> some View where Element: Identifiable {

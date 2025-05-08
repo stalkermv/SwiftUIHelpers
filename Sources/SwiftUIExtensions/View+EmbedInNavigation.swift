@@ -2,6 +2,7 @@
 //  Created by Valeriy Malishevskyi on 06.05.2023.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 
 public extension View {
@@ -14,4 +15,4 @@ public extension View {
         NavigationStack { self.navigationBarTitleDisplayMode(titleDisplayMode) }
     }
 }
-
+#endif

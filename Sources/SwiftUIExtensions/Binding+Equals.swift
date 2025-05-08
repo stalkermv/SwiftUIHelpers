@@ -4,8 +4,6 @@
 //  Created by Valeriy Malishevskyi on 21.08.2023.
 //
 
-#if canImport(FoundationExtensions)
-
 import SwiftUI
 import FoundationExtensions
 
@@ -39,7 +37,7 @@ public extension Binding {
     /// - Parameters:
     ///   - binding: A binding to a hashable value.
     ///   - value: The value to compare against the hashable value.
-    init<ScopeValue>(_ binding: Binding<ScopeValue>, equals value: ScopeValue)
+    init<ScopeValue: Sendable>(_ binding: Binding<ScopeValue>, equals value: ScopeValue)
     where ScopeValue : Hashable, ScopeValue : OptionalProtocol, Value == Bool {
         self.init {
             return binding.wrappedValue == value
@@ -52,5 +50,3 @@ public extension Binding {
         }
     }
 }
-
-#endif

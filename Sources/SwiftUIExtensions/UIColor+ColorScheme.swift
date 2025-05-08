@@ -5,6 +5,7 @@
 //  Created by Valeriy Malishevskyi on 05.08.2024.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 
 extension UIColor {
@@ -38,3 +39,4 @@ extension UIColor {
         }
     }
 }
+#endif

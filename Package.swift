@@ -11,6 +11,7 @@ let package = Package(
         .library(name: "SwiftUIHelpers", targets: ["SwiftUIHelpers"]),
     ],
     dependencies: [
+        .package(url: "https://github.com/stalkermv/SwiftHelpers.git", from: "1.0.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -19,11 +20,14 @@ let package = Package(
             name: "SwiftUIHelpers",
             dependencies: [
                 "SwiftUIExtensions",
+                .product(name: "SwiftHelpers", package: "SwiftHelpers")
             ]
         ),
         .target(
             name: "SwiftUIExtensions",
-            dependencies: []
+            dependencies: [
+                .product(name: "SwiftHelpers", package: "SwiftHelpers")
+            ]
         ),
         .testTarget(
             name: "SwiftUIExtensionsTests",

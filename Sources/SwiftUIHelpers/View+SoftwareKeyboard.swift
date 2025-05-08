@@ -1,7 +1,7 @@
 //
 //  Created by Valeriy Malishevskyi on 20.01.2024.
 //
-
+#if canImport(UIKit)
 import SwiftUI
 
 extension View {
@@ -35,3 +35,4 @@ extension View {
         }
     }
 }
+#endif

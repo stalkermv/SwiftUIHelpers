@@ -5,6 +5,7 @@
 //  Created by Valeriy Malishevskyi on 10.04.2025.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 
 extension View {
@@ -25,3 +26,4 @@ struct DynamicTypeSizeHiddenModifier: ViewModifier {
             .hidden(categories.contains(dynamicTypeSize), remove: true)
     }
 }
+#endif

@@ -5,6 +5,7 @@
 //  Created by Valeriy Malishevskyi on 12.07.2024.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 
 extension UIFont.TextStyle {
@@ -37,3 +38,4 @@ extension UIFont.TextStyle {
         }
     }
 }
+#endif

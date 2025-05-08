@@ -5,6 +5,7 @@
 //  Created by Valeriy Malishevskyi on 12.07.2024.
 //
 
+#if canImport(UIKit)
 import SwiftUI
 
 extension UIFont.Weight {
@@ -41,3 +42,4 @@ extension Font.Weight {
         return value
     }
 }
+#endif
