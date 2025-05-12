@@ -5,8 +5,6 @@
 //  Created by Valeriy Malishevskyi on 13.12.2024.
 //
 
-#if canImport(SwiftHelpers)
-
 import SwiftHelpers
 import SwiftUI
 
@@ -32,7 +30,7 @@ struct _ValueActionModifier<Value> : _SceneModifier where Value : Equatable {
 
 struct ValueActionProperty<Value: Equatable>: DynamicProperty {
     
-    @StoredValue private var value: Value!
+    private var value: Value!
     
     private var initialValue: Value
     private var action: (Value, Value) -> Void
@@ -50,7 +48,7 @@ struct ValueActionProperty<Value: Equatable>: DynamicProperty {
         set { value = newValue }
     }
     
-    func update() {
+    nonisolated mutating func update() {
         guard value != initialValue else { return }
         if useInitial {
             action(initialValue, initialValue)
@@ -61,5 +59,3 @@ struct ValueActionProperty<Value: Equatable>: DynamicProperty {
         value = initialValue
     }
 }
-
-#endif

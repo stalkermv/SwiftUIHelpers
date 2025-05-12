@@ -5,8 +5,6 @@
 //  Created by Valeriy Malishevskyi on 13.12.2024.
 //
 
-#if canImport(SwiftHelpers)
-
 import SwiftHelpers
 import Combine
 import SwiftUI
@@ -20,7 +18,7 @@ extension Scene {
 
 struct _PublisherActionProperty<P> : DynamicProperty
 where P : Publisher, P.Failure == Never {
-    @StoredValue private var cancelable: AnyCancellable?
+    private var cancelable: AnyCancellable?
     
     private let publisher: P
     private let action: (P.Output) -> Void
@@ -32,7 +30,7 @@ where P : Publisher, P.Failure == Never {
         self.action = action
     }
     
-    nonisolated func update() {
+    nonisolated mutating func update() {
         guard cancelable == nil else { return }
         cancelable = publisher.sink(receiveValue: action)
     }
@@ -49,5 +47,3 @@ struct _PublisherActionModifier<P> : _SceneModifier where P : Publisher, P.Failu
         content.onChange(of: "") { _ in }
     }
 }
-
-#endif
