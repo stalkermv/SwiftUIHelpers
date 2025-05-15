@@ -26,7 +26,7 @@ private struct AnchorPointPositionModifier: ViewModifier {
     let coordinateSpace: CoordinateSpace
     
     func body(content: Content) -> some View {
-        content.geometryEffect { content, proxy in
+        GeometryReader { proxy in
             let size = proxy.frame(in: coordinateSpace)
             
             let xOffset = (unitPoint.x - 0.5) * size.origin.x * 2
