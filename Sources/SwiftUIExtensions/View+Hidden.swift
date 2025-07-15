@@ -58,13 +58,22 @@ public struct HiddenModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        if isHidden {
-            if !remove {
-                content.hidden()
-            }
+        if isHidden && remove {
+            EmptyView()
         } else {
-            content
-                .transition(transition)
+            if #available(iOS 17.0, *) {
+                content
+                    .transaction { transaction in
+                        transaction.animation = .none
+                    } body: { content in
+                        content
+                            .opacity(isHidden ? 0 : 1)
+                    }
+                    .transition(transition)
+            } else {
+                content
+                    .transition(transition)
+            }
         }
     }
 }

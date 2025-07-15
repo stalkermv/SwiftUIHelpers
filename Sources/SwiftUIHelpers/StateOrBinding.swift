@@ -49,4 +49,10 @@ public enum StateOrBinding<Value>: DynamicProperty {
     public init(_ binding: Binding<Value>) {
         self = .binding(binding)
     }
+    
+    @inlinable
+    public init?(_ binding: Binding<Value>?) {
+        guard let binding else { return nil }
+        self = .binding(binding)
+    }
 }
