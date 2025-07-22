@@ -15,4 +15,9 @@ extension View {
         let style = style()
         return self.foregroundStyle(style)
     }
+    
+    @available(iOS 16.0, *)
+    public func tint<S>(_ tint: S) -> some View where S : ShapeStyle {
+        self.tint(Optional(tint))
+    }
 }
