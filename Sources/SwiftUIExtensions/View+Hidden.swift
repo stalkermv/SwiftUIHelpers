@@ -61,7 +61,7 @@ public struct HiddenModifier: ViewModifier {
         if isHidden && remove {
             EmptyView()
         } else {
-            if #available(iOS 17.0, *) {
+            if #available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *) {
                 content
                     .transaction { transaction in
                         transaction.animation = .none
