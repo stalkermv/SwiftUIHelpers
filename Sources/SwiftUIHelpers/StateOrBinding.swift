@@ -55,4 +55,16 @@ public enum StateOrBinding<Value>: DynamicProperty {
         guard let binding else { return nil }
         self = .binding(binding)
     }
+    
+    public mutating func update() {
+        switch self {
+            case .state(var state):
+                state.update()
+                self = .state(state)
+            case .binding:
+                break
+        }
+    }
 }
+
+extension StateOrBinding : Sendable where Value : Sendable { }

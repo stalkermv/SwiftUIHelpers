@@ -37,7 +37,13 @@ extension View {
 @available(iOS 16.0, *)
 struct FitPresentationDetentModifier: ViewModifier {
     
+    struct Geometry: Equatable {
+        let frameHeight: CGFloat
+        let safeAreaTop: CGFloat
+    }
+    
     @State private var height: CGFloat
+    @State private var safeAreaTop: CGFloat = 0
     
     init(initial height: CGFloat = .infinity) {
         self._height = .init(initialValue: height)
@@ -45,11 +51,21 @@ struct FitPresentationDetentModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .onGeometryChange(for: CGFloat.self) { proxy in
-                proxy.size.height.rounded(.up)
+            .onGeometryChange(for: Geometry.self) { proxy in
+                Geometry(
+                    frameHeight: proxy.frame(in: .global).height.rounded(.up),
+                    safeAreaTop: proxy.safeAreaInsets.top.rounded(.up)
+                )
             } action: { newValue in
-                height = newValue + 10
+                print("New height: \(newValue)")
+                if abs(safeAreaTop - newValue.safeAreaTop) > 16, !newValue.safeAreaTop.isZero {
+                    // When safe area changes significantly (e.g., during rotation), update immediately
+                    safeAreaTop = newValue.safeAreaTop
+                }
+                DispatchQueue.main.async {
+                    height = newValue.frameHeight
+                }
             }
-            .presentationDetents([.height(height)])
+            .presentationDetents([.height(height + safeAreaTop)])
     }
 }
