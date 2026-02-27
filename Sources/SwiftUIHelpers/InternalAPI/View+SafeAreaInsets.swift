@@ -5,10 +5,12 @@
 import SwiftUI
 
 extension View {
+    @_disfavoredOverload
     public func safeAreaInsets(_ insets: EdgeInsets) -> some View {
         _safeAreaInsets(insets)
     }
     
+    @_disfavoredOverload
     public func safeAreaInsets(_ edges: Edge.Set = .all, _ length: CGFloat) -> some View {
         let edgeInsets = EdgeInsets(
             top: edges.contains(.top) ? length : 0,
