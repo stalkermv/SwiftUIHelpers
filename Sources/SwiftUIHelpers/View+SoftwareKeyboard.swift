@@ -25,7 +25,7 @@ extension View {
     /// - Warning: This method uses private APIs (`NSSelectorFromString` and `setHardwareLayout:`) which
     ///   can lead to app rejection if used in apps submitted to the App Store. It's recommended to use this
     ///   for internal or testing purposes only.
-    public func softwareKeyboard() -> some View {
+    public func _softwareKeyboard() -> some View {
         onAppear {
             let setHardwareLayout = NSSelectorFromString("setHardwareLayout:")
             

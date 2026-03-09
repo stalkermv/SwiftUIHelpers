@@ -38,6 +38,13 @@ public extension HierarchicalPaletteShapeStyle {
     /// - optionally applies visual-exact compensation for non-primary levels
     /// - applies the resolved color back to the shape
     func _apply(to shape: inout SwiftUI._ShapeStyle_Shape) {
+        guard HierarchicalPaletteReentrancy.enter(styleType: Self.self) else {
+            return
+        }
+        defer {
+            HierarchicalPaletteReentrancy.leave(styleType: Self.self)
+        }
+
         guard let environment = HierarchicalPaletteIntrospection.environment(from: shape) else {
             assertionFailure("Unable to extract EnvironmentValues from _ShapeStyle_Shape")
             return
@@ -82,5 +89,35 @@ public extension HierarchicalPaletteShapeStyle {
         case let .visualExact(compensation):
             return compensation.multiplier(for: level)
         }
+    }
+}
+
+private enum HierarchicalPaletteReentrancy {
+    private static let prefix = "com.swiftuihelpers.hierarchicalpalette.reentrancy."
+
+    static func enter(styleType: Any.Type) -> Bool {
+        let key = token(for: styleType)
+        let threadDictionary = Thread.current.threadDictionary
+        let depth = (threadDictionary[key] as? Int) ?? 0
+        guard depth == 0 else { return false }
+        threadDictionary[key] = depth + 1
+        return true
+    }
+
+    static func leave(styleType: Any.Type) {
+        let key = token(for: styleType)
+        let threadDictionary = Thread.current.threadDictionary
+        let depth = (threadDictionary[key] as? Int) ?? 0
+
+        if depth <= 1 {
+            threadDictionary.removeObject(forKey: key)
+            return
+        }
+
+        threadDictionary[key] = depth - 1
+    }
+
+    private static func token(for styleType: Any.Type) -> String {
+        "\(prefix)\(String(reflecting: styleType))"
     }
 }

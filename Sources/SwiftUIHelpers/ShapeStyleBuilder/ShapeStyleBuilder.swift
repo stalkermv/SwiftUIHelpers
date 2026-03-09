@@ -12,7 +12,7 @@ public struct ShapeStyleBuilder {
         if let first = components.first {
             AnyShapeStyle(first)
         } else {
-            AnyShapeStyle(BackgroundStyle())
+            AnyShapeStyle(Color.clear)
         }
     }
     
