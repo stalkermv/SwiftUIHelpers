@@ -1,6 +1,6 @@
 import SwiftUI
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 struct HierarchicalPaletteDemoScreen: View {
     var body: some View {
         ScrollView {
@@ -115,7 +115,7 @@ private struct HierarchicalPaletteDemoSwatch: View {
 }
 
 #Preview("Visual Exact") {
-    if #available(iOS 17.0, *) {
+    if #available(iOS 17.0, macOS 14.0, *) {
         NavigationStack {
             HierarchicalPaletteDemoScreen()
         }
@@ -124,7 +124,7 @@ private struct HierarchicalPaletteDemoSwatch: View {
 }
 
 #Preview("Native") {
-    if #available(iOS 17.0, *) {
+    if #available(iOS 17.0, macOS 14.0, *) {
         NavigationStack {
             HierarchicalPaletteDemoScreen()
         }

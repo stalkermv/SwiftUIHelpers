@@ -27,22 +27,23 @@ public struct GeometryEffectView<Root: View, Content: View>: View {
             .hidden()
             .modifier(GeometryProxyWrapper())
             .overlayPreferenceValue(GeometryEffectProxyPreferenceKey.self) { proxy in
-                content(root, proxy)
+                if let proxy {
+                    content(root, proxy)
+                }
             }
     }
 }
 
 struct GeometryProxyWrapper: ViewModifier {
     func body(content: Content) -> some View {
-        content
-            .overlay(
-                GeometryReader { geometry in
-                    Color.clear.preference(
-                        key: GeometryEffectProxyPreferenceKey.self,
-                        value: GeometryEffectProxy(geometry)
-                    )
-                }
-            )
+        content.overlay {
+            GeometryReader { geometry in
+                Color.clear.preference(
+                    key: GeometryEffectProxyPreferenceKey.self,
+                    value: GeometryEffectProxy(geometry)
+                )
+            }
+        }
     }
 }
 
@@ -54,36 +55,23 @@ struct GeometryProxyWrapper: ViewModifier {
     public let safeAreaInsets: EdgeInsets
     
     public var size: CGSize {
-        localFrame?.size ?? .zero
+        proxy?.proxy.size ?? .zero
     }
     
-    static nonisolated var empty: GeometryEffectProxy {
-        .init(nil)
-    }
-    
-    public nonisolated init(_ geometry: GeometryProxy?) {
-        localFrame = geometry?.frame(in: .local)
-        globalFrame = geometry?.frame(in: .global)
+    public nonisolated init(_ geometry: GeometryProxy) {
+        localFrame = geometry.frame(in: .local)
+        globalFrame = geometry.frame(in: .global)
        
-        safeAreaInsets = geometry?.safeAreaInsets ?? .init()
-        
-        proxy = geometry.map(EquatableGeometryProxy.init)
+        safeAreaInsets = geometry.safeAreaInsets
+                proxy = EquatableGeometryProxy(geometry)
     }
     
     public func _frame(in coordinateSpace: CoordinateSpace) -> CGRect? {
         switch coordinateSpace {
         case .local:
-            guard let result = localFrame else {
-                return nil
-            }
-            
-            return result
+            return proxy?.proxy.frame(in: .local) ?? localFrame
         case .global:
-            guard let result = globalFrame else {
-                return nil
-            }
-            
-            return result
+                return proxy?.proxy.frame(in: .global) ?? globalFrame
         case .named(_):
             guard let result = proxy?.proxy.frame(in: coordinateSpace) else {
                 return nil
@@ -115,14 +103,13 @@ private struct EquatableGeometryProxy: Equatable, @unchecked Sendable {
 }
 
 struct GeometryEffectProxyPreferenceKey: PreferenceKey {
-    static let defaultValue: GeometryEffectProxy = .empty
+    static let defaultValue: GeometryEffectProxy? = nil
     
-    static func reduce(value: inout GeometryEffectProxy, nextValue: () -> GeometryEffectProxy) {
-        let isChanged = value != nextValue()
-        let isNotEmpty = value != .empty
-        if isChanged && isNotEmpty {
-            value = nextValue()
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        let next = nextValue()
+        let isChanged = value != next
+        if isChanged {
+            value = next
         }
-        print("GeometryEffectProxyPreferenceKey reduce called with \(value)")
     }
 }

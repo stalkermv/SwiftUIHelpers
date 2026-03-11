@@ -9,7 +9,7 @@ struct HierarchicalPaletteDemoRow: Identifiable {
 }
 
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 enum HierarchicalPaletteDemoCatalog {
     static let labelRows: [HierarchicalPaletteDemoRow] = [
         .init(title: ".demoLabel", hex: DemoPalette.label.primary, style: AnyShapeStyle(DemoLabelShapeStyle())),
@@ -56,7 +56,7 @@ private enum DemoPalette {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 private struct DemoBackgroundShapeStyle: HierarchicalPaletteShapeStyle {
     func resolve(in environment: EnvironmentValues, for level: HierarchicalPaletteLevel) -> Color {
         switch level {
@@ -70,7 +70,7 @@ private struct DemoBackgroundShapeStyle: HierarchicalPaletteShapeStyle {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 private struct DemoLabelShapeStyle: HierarchicalPaletteShapeStyle {
     func resolve(in environment: EnvironmentValues, for level: HierarchicalPaletteLevel) -> Color {
         switch level {
@@ -86,7 +86,7 @@ private struct DemoLabelShapeStyle: HierarchicalPaletteShapeStyle {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 private struct DemoAccentShapeStyle: HierarchicalPaletteShapeStyle {
     func resolve(in environment: EnvironmentValues, for level: HierarchicalPaletteLevel) -> Color {
         switch level {
