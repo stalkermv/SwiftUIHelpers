@@ -45,7 +45,7 @@ struct FitPresentationDetentModifier: ViewModifier {
     @State private var height: CGFloat
     @State private var safeAreaTop: CGFloat = 0
     
-    init(initial height: CGFloat = .infinity) {
+    init(initial height: CGFloat = UIScreen.main.bounds.height / 2) {
         self._height = .init(initialValue: height)
     }
     
