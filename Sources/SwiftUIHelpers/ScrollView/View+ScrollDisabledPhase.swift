@@ -9,13 +9,13 @@ import SwiftUI
 
 extension View {
 
-    @available(iOS 18.0, *)
+    @available(iOS 18.0, macOS 15.0, *)
     public func scrollDisabled(_ disabled: Bool, during phase: ScrollPhase) -> some View {
         modifier(ScrollDisabledDuringPhase(disabled: disabled, phase: phase))
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 struct ScrollDisabledDuringPhase: ViewModifier {
     let disabled: Bool
     let phase: ScrollPhase
