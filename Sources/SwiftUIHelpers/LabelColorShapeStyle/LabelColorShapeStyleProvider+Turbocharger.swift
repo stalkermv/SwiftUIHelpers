@@ -12,13 +12,13 @@ import Engine
 @available(iOS 16.0, *)
 extension BackgroundStyle: LabelColorShapeStyleProvider {
     public func resolveLabel(in environment: EnvironmentValues) -> Color {
-        environment.backgroundStyle?.color?.accessibleFontColor ?? .black
+        environment.backgroundStyle?.color(in: environment)?.accessibleFontColor ?? .black
     }
 }
 
 extension TintShapeStyle:  LabelColorShapeStyleProvider {
     public func resolveLabel(in environment: EnvironmentValues) -> Color {
-        environment.tint.color?.accessibleFontColor ?? .white
+        environment.tintStyle.color(in: environment)?.accessibleFontColor ?? .white
     }
 }
 #endif
