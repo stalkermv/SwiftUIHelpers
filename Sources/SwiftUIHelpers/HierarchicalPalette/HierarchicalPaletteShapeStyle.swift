@@ -2,6 +2,9 @@ import SwiftUI
 
 /// A shape style protocol that resolves semantic palette colors by hierarchical level.
 ///
+/// > EXPERIMENTAL — relies on private SwiftUI internals; may break without warning on any OS
+/// > update; not covered by semver.
+///
 /// Use this protocol to define type-driven semantic colors that can participate in SwiftUI
 /// hierarchical foreground resolution (`primary`, `secondary`, `tertiary`, and so on).
 ///

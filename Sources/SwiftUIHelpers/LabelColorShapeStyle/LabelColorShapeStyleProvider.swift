@@ -8,6 +8,10 @@
 #if canImport(UIKit)
 import SwiftUI
 
+/// A protocol that provides a label color derived from the current background shape style.
+///
+/// > EXPERIMENTAL — relies on private SwiftUI internals; may break without warning on any OS
+/// > update; not covered by semver.
 public protocol LabelColorShapeStyleProvider: Sendable {
     func resolveLabel(in environment: EnvironmentValues) -> Color
 }
