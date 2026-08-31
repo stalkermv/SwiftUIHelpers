@@ -29,7 +29,7 @@ extension UIFont.Weight {
             self = .heavy
         case .black:
             self = .black
-        @unknown default:
+        default:
             self = .regular
         }
     }
