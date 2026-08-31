@@ -5,18 +5,12 @@
 //
 
 import SwiftUI
-import FoundationExtensions
 
 public extension Binding {
-    /// Initializes a new boolean binding based on the equality of a hashable value.
+    /// Returns a boolean binding that is `true` when this optional binding equals `value`.
     ///
-    /// - Note: When setting the binding to `false`, it will set the original binding to `nil`
-    /// if the current value matches the specified value; otherwise, it will do nothing.
-    ///
-    /// This initializer allows you to create a boolean binding that's `true` when the provided hashable value matches
-    /// the specified value and `false` otherwise.
-    /// It's especially useful when working with enums or other hashable types
-    /// where you want to create conditions based on the current value.
+    /// - Setting to `true` writes `value` into the original binding.
+    /// - Setting to `false` writes `nil` only when the current value equals `value`; otherwise no-op.
     ///
     /// Example:
     /// ```swift
@@ -24,28 +18,25 @@ public extension Binding {
     ///     case top
     ///     case bottom
     /// }
-    /// @State var selected: SelectedArea? = SelectedArea.top
+    /// @State var selected: SelectedArea? = .top
     ///
     /// var body: some View {
     ///     Text("Hello, World!")
-    ///         .sheet(isPresented: Binding($selected, equals: .bottom), content: {
+    ///         .sheet(isPresented: $selected.equals(.bottom)) {
     ///             Text("Sheet Content")
-    ///         })
+    ///         }
     /// }
     /// ```
     ///
-    /// - Parameters:
-    ///   - binding: A binding to a hashable value.
-    ///   - value: The value to compare against the hashable value.
-    init<ScopeValue: Sendable>(_ binding: Binding<ScopeValue>, equals value: ScopeValue)
-    where ScopeValue : Hashable, ScopeValue : OptionalProtocol, Value == Bool {
-        self.init {
-            return binding.wrappedValue == value
+    /// - Parameter value: The value to compare against.
+    func equals<Wrapped: Hashable & Sendable>(_ value: Wrapped) -> Binding<Bool> where Value == Wrapped? {
+        Binding<Bool> {
+            wrappedValue == value
         } set: { newValue in
-            if binding.wrappedValue == value, !newValue {
-                binding.wrappedValue = nil
-            } else if newValue {
-                binding.wrappedValue = value
+            if newValue {
+                self.wrappedValue = value
+            } else if self.wrappedValue == value {
+                self.wrappedValue = nil
             }
         }
     }
