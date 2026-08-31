@@ -7,25 +7,6 @@ import SwiftUI
 import Testing
 @testable import SwiftUIExtensions
 
-#if canImport(UIKit)
-import UIKit
-private typealias PlatColor = UIColor
-#else
-import AppKit
-private typealias PlatColor = NSColor
-#endif
-
-private func components(of color: Color) -> (r: CGFloat, g: CGFloat, b: CGFloat)? {
-    var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-    #if canImport(UIKit)
-    guard PlatColor(color).getRed(&r, green: &g, blue: &b, alpha: &a) else { return nil }
-    #else
-    guard let srgb = PlatColor(color).usingColorSpace(.sRGB) else { return nil }
-    srgb.getRed(&r, green: &g, blue: &b, alpha: &a)
-    #endif
-    return (r, g, b)
-}
-
 struct ColorAccessibleFontColorTests {
     // (0,0,0) — black: L=0 → white text
     @Test func black_background_returns_white_text() throws {
