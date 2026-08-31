@@ -32,7 +32,7 @@ struct NamedProvider: FontProvider {
         }
 
         return PlatformFontDescriptor(fontAttributes: [
-            .family: name,
+            .name: name,
             .size: scaledSize
         ])
     }
