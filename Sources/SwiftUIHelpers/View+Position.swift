@@ -16,28 +16,30 @@ extension View {
             unitPoint: point,
             coordinateSpace: coordinateSpace
         )
-        
         return self.modifier(modifier)
     }
 }
 
-private struct AnchorPointPositionModifier: ViewModifier {
+struct AnchorPointPositionModifier: ViewModifier {
     let unitPoint: UnitPoint
     let coordinateSpace: CoordinateSpace
-    
+
     func body(content: Content) -> some View {
         GeometryReader { proxy in
-            let size = proxy.frame(in: coordinateSpace)
-            
-            let xOffset = (unitPoint.x - 0.5) * size.origin.x * 2
-            let yOffset = (unitPoint.y - 0.5) * size.origin.y * 2
-            
-            let projectedPoint = CGPoint(
-                x: xOffset + (size.width / 2),
-                y: yOffset + (size.height / 2)
-            )
-            
-            content.position(projectedPoint)
+            let frame = proxy.frame(in: coordinateSpace)
+            let point = AnchorPointPositionModifier.projectedPoint(unitPoint: unitPoint, frame: frame)
+            content.position(point)
         }
+    }
+
+    /// Projects a `UnitPoint` onto an absolute `CGPoint` within `frame`.
+    ///
+    /// Formula: `(frame.origin.x + unitPoint.x * frame.width,
+    ///            frame.origin.y + unitPoint.y * frame.height)`
+    static func projectedPoint(unitPoint: UnitPoint, frame: CGRect) -> CGPoint {
+        CGPoint(
+            x: frame.origin.x + unitPoint.x * frame.width,
+            y: frame.origin.y + unitPoint.y * frame.height
+        )
     }
 }
