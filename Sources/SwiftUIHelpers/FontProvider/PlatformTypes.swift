@@ -78,8 +78,7 @@ extension PlatformFontWeight {
         case .bold: self = .bold
         case .heavy: self = .heavy
         case .black: self = .black
-        default: self = weight.rawValue
-                .map(PlatformFont.Weight.init(rawValue:)) ?? .regular
+        default: self = .regular
         }
         #else
         switch weight {
@@ -92,18 +91,9 @@ extension PlatformFontWeight {
         case .bold: self = .bold
         case .heavy: self = .heavy
         case .black: self = .black
-        default: self = weight.rawValue
-                .map(PlatformFont.Weight.init(rawValue:)) ?? .regular
+        default: self = .regular
         }
         #endif
-    }
-}
-
-extension Font.Weight {
-    var rawValue: CGFloat? {
-        let mirror = Mirror(reflecting: self)
-        let value = mirror.children.first?.value as? CGFloat
-        return value
     }
 }
 

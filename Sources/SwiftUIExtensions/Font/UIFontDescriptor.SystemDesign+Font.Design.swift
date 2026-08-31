@@ -19,7 +19,7 @@ extension UIFontDescriptor.SystemDesign {
             self = .rounded
         case .monospaced:
             self = .monospaced
-        default:
+        @unknown default:
             self = .default
         }
     }

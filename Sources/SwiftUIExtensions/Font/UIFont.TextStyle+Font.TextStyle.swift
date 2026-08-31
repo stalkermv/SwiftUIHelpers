@@ -33,7 +33,7 @@ extension UIFont.TextStyle {
             self = .caption1
         case .caption2:
             self = .caption2
-        default:
+        @unknown default:
             self = .body
         }
     }
