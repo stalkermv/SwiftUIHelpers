@@ -35,16 +35,23 @@ struct LabelColorShapeStyle<Shape: LabelColorShapeStyleProvider>: ShapeStyle {
     
     func _apply(to shape: inout SwiftUI._ShapeStyle_Shape) {
         let mirror = Mirror(reflecting: shape)
+        var applied = false
         
         for child in mirror.children {
             if let label = child.label, label == "environment" {
                 if let environment = child.value as? EnvironmentValues {
                     resolve(in: environment)._apply(to: &shape)
                 } else {
-                    fatalError("Unable to cast environment")
+                    assertionFailure("Unable to extract EnvironmentValues from _ShapeStyle_Shape")
+                    resolve(in: EnvironmentValues())._apply(to: &shape)
                 }
+                applied = true
                 break
             }
+        }
+        
+        if !applied {
+            resolve(in: EnvironmentValues())._apply(to: &shape)
         }
     }
 }
