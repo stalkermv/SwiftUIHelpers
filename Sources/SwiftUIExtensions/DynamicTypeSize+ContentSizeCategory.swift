@@ -17,7 +17,7 @@ extension ContentSizeCategory {
     ///
     /// ```swift
     /// let contentSize = ContentSizeCategory(.large)
-    /// print(contentSize) // .large
+    /// // contentSize == .large
     /// ```
     ///
     /// - Parameter dynamicTypeSize: The `DynamicTypeSize` to convert.
