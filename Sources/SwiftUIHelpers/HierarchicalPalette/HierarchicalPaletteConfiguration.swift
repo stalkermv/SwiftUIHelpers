@@ -15,30 +15,18 @@ public struct HierarchicalPaletteConfiguration: Sendable, Equatable {
     /// Alpha policy applied during style resolution.
     public var alphaPolicy: HierarchicalPaletteAlphaPolicy
 
-    /// Enables structured debug logging via ``Logger/hierarchicalPalette``.
-    public var loggingEnabled: Bool
-
     /// Creates a configuration object.
-    /// - Parameters:
-    ///   - alphaPolicy: Hierarchical alpha handling policy.
-    ///   - loggingEnabled: Enables verbose diagnostic logging when `true`.
-    public init(
-        alphaPolicy: HierarchicalPaletteAlphaPolicy,
-        loggingEnabled: Bool
-    ) {
+    /// - Parameter alphaPolicy: Hierarchical alpha handling policy.
+    public init(alphaPolicy: HierarchicalPaletteAlphaPolicy) {
         self.alphaPolicy = alphaPolicy
-        self.loggingEnabled = loggingEnabled
     }
 }
 
 public extension HierarchicalPaletteConfiguration {
     /// Default configuration.
     ///
-    /// Uses visual-exact compensation and keeps logging disabled.
-    static let `default` = HierarchicalPaletteConfiguration(
-        alphaPolicy: .visualExact(.default),
-        loggingEnabled: false
-    )
+    /// Uses visual-exact compensation.
+    static let `default` = HierarchicalPaletteConfiguration(alphaPolicy: .visualExact(.default))
 }
 
 private struct HierarchicalPaletteConfigurationKey: EnvironmentKey {

@@ -1,5 +1,4 @@
 import SwiftUI
-import Logging
 
 /// A shape style protocol that resolves semantic palette colors by hierarchical level.
 ///
@@ -63,13 +62,6 @@ public extension HierarchicalPaletteShapeStyle {
 
         if let compensationMultiplier {
             resolvedColor = resolvedColor.opacity(compensationMultiplier)
-        }
-
-        if configuration.loggingEnabled {
-            let compensationDescription = compensationMultiplier.map { String($0) } ?? "none"
-            Logger.hierarchicalPalette.debug(
-                "style=\(String(describing: Self.self)) op=\(operationInfo.kind.rawValue) level=\(requestedLevel.rawValue) src=\(operationInfo.levelSource) role=\(HierarchicalPaletteIntrospection.role(from: shape)) substrate=\(HierarchicalPaletteIntrospection.substrate(from: shape)) compensation=\(compensationDescription)"
-            )
         }
 
         resolvedColor._apply(to: &shape)
