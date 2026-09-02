@@ -11,40 +11,43 @@ import SwiftUI
 
 // MARK: - StateOrBinding
 
-@MainActor struct StateOrBindingTests {
+@MainActor @Suite("State or binding", .tags(.dynamicProperties))
+struct StateOrBindingTests {
 
-    // Construct .state and read wrappedValue
-    @Test func state_init_wrappedValue() {
+    @Test("Constructing from a value reads back through wrappedValue")
+    func stateInitWrappedValue() {
         let s = StateOrBinding(42)
         #expect(s.wrappedValue == 42)
     }
 
-    // projectedValue is a Binding; reading it gives wrappedValue
-    @Test func state_projectedValue_read() {
+    @Test("projectedValue is a binding that reflects the current wrappedValue")
+    func stateProjectedValueRead() {
         let s: StateOrBinding<String> = StateOrBinding("hello")
         #expect(s.projectedValue.wrappedValue == "hello")
     }
 
-    // Mutate via projectedValue binding
-    @Test func state_projectedValue_write() {
+    @Test("Writing through projectedValue outside the render loop does not round-trip")
+    func stateProjectedValueWrite() {
         var s = StateOrBinding(1)
         s.projectedValue.wrappedValue = 99
-        // Outside SwiftUI, State stores its initial value in the heap box.
-        // A write on a freshly created State has no @_storageRestrictions graph
-        // to update, so the set is a no-op. Document: read back equals initial.
-        // This verifies the call doesn't crash, not a round-trip guarantee.
-        #expect(s.wrappedValue == 1 || s.wrappedValue == 99)
+        // Outside the render loop State has no storage node; reads return the
+        // initial value — this is a deliberate implementation-regression check
+        // (see README Known limitations).
+        #expect(s.wrappedValue == 1)
     }
 
-    // update() call must not crash
-    @Test func state_update_doesNotCrash() {
+    @Test("Calling update() outside the render loop leaves the value unchanged")
+    func stateUpdateDoesNotCrash() {
         var s = StateOrBinding(true)
-        s.update() // should be a no-op outside SwiftUI; no crash expected
-        #expect(s.wrappedValue == true || s.wrappedValue == false)
+        s.update()
+        // Outside the render loop State has no storage node; reads return the
+        // initial value — this is a deliberate implementation-regression check
+        // (see README Known limitations).
+        #expect(s.wrappedValue == true)
     }
 
-    // Construct .binding case
-    @Test func binding_case_wrappedValue() {
+    @Test("The binding case reads and writes through the underlying binding")
+    func bindingCaseWrappedValue() {
         var storage = 7
         let b = Binding<Int>(get: { storage }, set: { storage = $0 })
         let s: StateOrBinding<Int> = StateOrBinding(b)
@@ -54,8 +57,8 @@ import SwiftUI
         #expect(s.wrappedValue == 42)
     }
 
-    // projectedValue for .binding returns the original binding
-    @Test func binding_case_projectedValue() {
+    @Test("projectedValue for the binding case returns the original binding")
+    func bindingCaseProjectedValue() {
         var storage = "x"
         let b = Binding<String>(get: { storage }, set: { storage = $0 })
         let s: StateOrBinding<String> = StateOrBinding(b)
@@ -63,14 +66,14 @@ import SwiftUI
         #expect(storage == "y")
     }
 
-    // Optional init returns nil for nil binding
-    @Test func optional_init_nil() {
+    @Test("The optional initializer returns nil for a nil binding")
+    func optionalInitNil() {
         let s = StateOrBinding<Int>(Binding<Int>?(nil))
         #expect(s == nil)
     }
 
-    // Optional init returns non-nil for valid binding
-    @Test func optional_init_nonNil() {
+    @Test("The optional initializer returns a value for a valid binding")
+    func optionalInitNonNil() {
         var v = 5
         let b: Binding<Int>? = Binding(get: { v }, set: { v = $0 })
         let s = StateOrBinding<Int>(b)
@@ -81,32 +84,33 @@ import SwiftUI
 
 // MARK: - EnvironmentOrValue
 
-@MainActor struct EnvironmentOrValueTests {
+@MainActor @Suite("Environment or value", .tags(.dynamicProperties))
+struct EnvironmentOrValueTests {
 
-    // Construct with a direct value, read wrappedValue
-    @Test func value_init_wrappedValue() {
+    @Test("Constructing from a direct value reports isValue and reads it back")
+    func valueInitWrappedValue() {
         let e = EnvironmentOrValue(99)
         #expect(e.wrappedValue == 99)
         #expect(e.isValue == true)
     }
 
-    // isValue is false for keyPath init
-    @Test func keyPath_init_isValue_false() {
+    @Test("Constructing from a key path reports isValue false")
+    func keyPathInitIsValueFalse() {
         let e = EnvironmentOrValue(\.colorScheme)
         #expect(e.isValue == false)
     }
 
-    // keyPath init: update() must not crash; wrappedValue falls back to
-    // the default environment value (light scheme in test context)
-    @Test func keyPath_init_readDoesNotCrash() {
+    @Test("Reading a key-path-backed value outside a view falls back to the platform default")
+    func keyPathInitReadUsesPlatformDefault() {
         let e = EnvironmentOrValue(\.colorScheme)
-        // Reading wrappedValue outside a View: EnvironmentValues() default is used.
-        // Document outcome: typically .light.
-        let _ = e.wrappedValue
+        // Reading wrappedValue outside a View constructs a fresh
+        // EnvironmentValues(), whose colorScheme default is .light in test
+        // context (see README Known limitations).
+        #expect(e.wrappedValue == .light)
     }
 
-    // Writing overrides to .value storage
-    @Test func write_switches_to_value_storage() {
+    @Test("Writing switches storage from environment-backed to value-backed")
+    func writeSwitchesToValueStorage() {
         var e = EnvironmentOrValue(\.colorScheme)
         #expect(e.isValue == false)
         e.wrappedValue = .dark
