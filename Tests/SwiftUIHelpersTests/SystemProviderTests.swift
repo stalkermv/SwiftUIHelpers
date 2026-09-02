@@ -8,21 +8,20 @@ import UIKit
 import AppKit
 #endif
 
+// Argument table lives at file scope: `@Test(arguments:)` cannot reference
+// actor-isolated statics, and these rows must be plain Sendable values.
+private let descriptorAttributeCases: [(size: CGFloat, weight: PlatformFontWeight?, expectedHasTraits: Bool)] = [
+    (18.0, nil, false),
+    (14.0, .bold, true),
+    (12.0, nil, false),
+]
+
+@Suite("System font provider", .tags(.fonts))
 struct SystemProviderTests {
-    @Test func descriptorAttributes_containsSize() {
-        let attrs = SystemProvider.descriptorAttributes(size: 18.0, weight: nil)
-        let size = attrs[.size] as? CGFloat
-        #expect(size == 18.0)
-    }
-
-    @Test func descriptorAttributes_withWeight_containsTraits() {
-        let attrs = SystemProvider.descriptorAttributes(size: 14.0, weight: .bold)
-        #expect(attrs[.traits] != nil)
-        #expect(attrs[.size] as? CGFloat == 14.0)
-    }
-
-    @Test func descriptorAttributes_noWeight_noTraits() {
-        let attrs = SystemProvider.descriptorAttributes(size: 12.0, weight: nil)
-        #expect(attrs[.traits] == nil)
+    @Test("Descriptor attributes carry the size, and traits only when a weight is given", arguments: descriptorAttributeCases)
+    func descriptorAttributes(size: CGFloat, weight: PlatformFontWeight?, expectedHasTraits: Bool) {
+        let attrs = SystemProvider.descriptorAttributes(size: size, weight: weight)
+        #expect(attrs[.size] as? CGFloat == size)
+        #expect((attrs[.traits] != nil) == expectedHasTraits)
     }
 }

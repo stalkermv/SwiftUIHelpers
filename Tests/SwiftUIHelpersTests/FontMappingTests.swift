@@ -4,38 +4,77 @@ import SwiftUI
 
 #if canImport(UIKit)
 import UIKit
+
+/// UIKit maps `Font.TextStyle` to `UIFont.TextStyle`, collapsing `.title` to
+/// `.title1` and `.caption` to `.caption1` (there's no separate first-tier
+/// case on this platform). 11 cases — `extraLargeTitle` has no `UIFont.TextStyle`
+/// counterpart.
+private let textStyleCases: [(style: Font.TextStyle, expected: PlatformTextStyle)] = [
+    (.largeTitle, .largeTitle),
+    (.title, .title1),
+    (.title2, .title2),
+    (.title3, .title3),
+    (.headline, .headline),
+    (.body, .body),
+    (.callout, .callout),
+    (.subheadline, .subheadline),
+    (.footnote, .footnote),
+    (.caption, .caption1),
+    (.caption2, .caption2),
+]
 #else
 import AppKit
+
+/// macOS collapses further: `.largeTitle → .title1` (no distinct large-title
+/// tier) and `.callout → .body` (no distinct callout tier). 11 cases.
+private let textStyleCases: [(style: Font.TextStyle, expected: PlatformTextStyle)] = [
+    (.largeTitle, .title1),
+    (.title, .title1),
+    (.title2, .title2),
+    (.title3, .title3),
+    (.headline, .headline),
+    (.body, .body),
+    (.callout, .body),
+    (.subheadline, .subheadline),
+    (.footnote, .footnote),
+    (.caption, .caption1),
+    (.caption2, .caption2),
+]
 #endif
 
+private let fontWeightCases: [(weight: Font.Weight, expected: PlatformFontWeight)] = [
+    (.ultraLight, .ultraLight),
+    (.thin, .thin),
+    (.light, .light),
+    (.regular, .regular),
+    (.medium, .medium),
+    (.semibold, .semibold),
+    (.bold, .bold),
+    (.heavy, .heavy),
+    (.black, .black),
+]
+
+private let fontDesignCases: [(design: Font.Design, expected: PlatformSystemDesign)] = [
+    (.default, .default),
+    (.serif, .serif),
+    (.rounded, .rounded),
+    (.monospaced, .monospaced),
+]
+
+@Suite("Font mapping", .tags(.fonts))
 struct FontMappingTests {
-    // MARK: - Font.TextStyle → PlatformTextStyle (12 cases on iOS, 11 on macOS)
-    @Test func textStyle_largeTitle() { _ = PlatformTextStyle(.largeTitle) }
-    @Test func textStyle_title()      { _ = PlatformTextStyle(.title) }
-    @Test func textStyle_title2()     { _ = PlatformTextStyle(.title2) }
-    @Test func textStyle_title3()     { _ = PlatformTextStyle(.title3) }
-    @Test func textStyle_headline()   { _ = PlatformTextStyle(.headline) }
-    @Test func textStyle_body()       { _ = PlatformTextStyle(.body) }
-    @Test func textStyle_callout()    { _ = PlatformTextStyle(.callout) }
-    @Test func textStyle_subheadline(){ _ = PlatformTextStyle(.subheadline) }
-    @Test func textStyle_footnote()   { _ = PlatformTextStyle(.footnote) }
-    @Test func textStyle_caption()    { _ = PlatformTextStyle(.caption) }
-    @Test func textStyle_caption2()   { _ = PlatformTextStyle(.caption2) }
+    @Test("Font.TextStyle maps to the platform text style", arguments: textStyleCases)
+    func textStyleMapping(style: Font.TextStyle, expected: PlatformTextStyle) {
+        #expect(PlatformTextStyle(style) == expected)
+    }
 
-    // MARK: - Font.Weight → PlatformFontWeight (9 cases)
-    @Test func weight_ultraLight()    { #expect(PlatformFontWeight(.ultraLight) == .ultraLight) }
-    @Test func weight_thin()          { #expect(PlatformFontWeight(.thin) == .thin) }
-    @Test func weight_light()         { #expect(PlatformFontWeight(.light) == .light) }
-    @Test func weight_regular()       { #expect(PlatformFontWeight(.regular) == .regular) }
-    @Test func weight_medium()        { #expect(PlatformFontWeight(.medium) == .medium) }
-    @Test func weight_semibold()      { #expect(PlatformFontWeight(.semibold) == .semibold) }
-    @Test func weight_bold()          { #expect(PlatformFontWeight(.bold) == .bold) }
-    @Test func weight_heavy()         { #expect(PlatformFontWeight(.heavy) == .heavy) }
-    @Test func weight_black()         { #expect(PlatformFontWeight(.black) == .black) }
+    @Test("Font.Weight maps to the platform font weight", arguments: fontWeightCases)
+    func fontWeightMapping(weight: Font.Weight, expected: PlatformFontWeight) {
+        #expect(PlatformFontWeight(weight) == expected)
+    }
 
-    // MARK: - Font.Design → PlatformSystemDesign (4 cases)
-    @Test func design_default()       { #expect(PlatformSystemDesign(.default) == .default) }
-    @Test func design_serif()         { #expect(PlatformSystemDesign(.serif) == .serif) }
-    @Test func design_rounded()       { #expect(PlatformSystemDesign(.rounded) == .rounded) }
-    @Test func design_monospaced()    { #expect(PlatformSystemDesign(.monospaced) == .monospaced) }
+    @Test("Font.Design maps to the platform system design", arguments: fontDesignCases)
+    func fontDesignMapping(design: Font.Design, expected: PlatformSystemDesign) {
+        #expect(PlatformSystemDesign(design) == expected)
+    }
 }
