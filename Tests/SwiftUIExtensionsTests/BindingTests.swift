@@ -9,8 +9,22 @@ import SwiftUI
 import Testing
 @testable import SwiftUIExtensions
 
-@MainActor struct BindingTests {
-    @Test func bindingKeyPath() {
+// Argument tables live at file scope: `@Test(arguments:)` cannot reference
+// actor-isolated statics, and these rows must be plain Sendable values.
+private let booleanGetCases: [(value: String?, expected: Bool)] = [
+    (nil, false),
+    ("hello", true),
+]
+
+private let equalsGetCases: [(storedValue: Int?, expected: Bool)] = [
+    (nil, false),
+    (7, false),
+    (42, true),
+]
+
+@MainActor @Suite("Binding helpers", .tags(.bindings))
+struct BindingTests {
+    @Test("Key-path binding reads and writes selection by ID") func bindingKeyPath() {
         struct Item: Identifiable, Equatable {
             let id: Int
             let name: String
@@ -42,7 +56,8 @@ import Testing
         #expect(idBinding.wrappedValue == nil)
     }
     
-    @Test func testBindingNilCoalescingOperator() {
+    @Test("Nil-coalescing binding falls back to default and writes through")
+    func bindingNilCoalescingOperator() {
         var value: Int? = nil
         let optionalBinding = Binding<Int?>(
             get: { value },
@@ -65,7 +80,8 @@ import Testing
 
     // MARK: - Key-path binding matrix
 
-    @Test func keyPathBinding_setKnownID_updatesSelection() {
+    @Test("Setting a known ID updates the selection")
+    func keyPathBindingSetKnownID() {
         struct Item: Identifiable, Equatable { let id: Int }
         let items = [Item(id: 1), Item(id: 2), Item(id: 3)]
         var selected: Item? = items[0]
@@ -76,7 +92,8 @@ import Testing
         #expect(selected == items[2])
     }
 
-    @Test func keyPathBinding_setUnknownID_isNoOp() {
+    @Test("Setting an unknown ID leaves the selection unchanged")
+    func keyPathBindingSetUnknownID() {
         struct Item: Identifiable, Equatable { let id: Int }
         let items = [Item(id: 1), Item(id: 2)]
         var selected: Item? = items[0]
@@ -87,7 +104,8 @@ import Testing
         #expect(selected == items[0]) // unchanged
     }
 
-    @Test func keyPathBinding_setNil_clearsSelection() {
+    @Test("Setting nil clears the selection")
+    func keyPathBindingSetNil() {
         struct Item: Identifiable, Equatable { let id: Int }
         let items = [Item(id: 1), Item(id: 2)]
         var selected: Item? = items[0]
@@ -98,7 +116,8 @@ import Testing
         #expect(selected == nil)
     }
 
-    @Test func keyPathBinding_repeatedID_picksFirst() {
+    @Test("A repeated ID matches the first element")
+    func keyPathBindingRepeatedID() {
         struct Item: Identifiable, Equatable {
             let id: Int
             let tag: String
@@ -113,66 +132,58 @@ import Testing
         #expect(selected?.tag == "first")
     }
 
-    // MARK: - boolean()
+        // MARK: - boolean() — get cases (parameterized)
 
-    @Test func boolean_getTrue_whenNonNil() {
-        var value: String? = "hello"
-        let b = Binding<String?>(get: { value }, set: { value = $0 })
-        #expect(b.boolean().wrappedValue == true)
+    @Test("Boolean get reflects nil-ness of wrapped value", arguments: booleanGetCases)
+    func booleanGet(value: String?, expected: Bool) {
+        let box = ValueBox<String?>(value)
+        #expect(box.binding.boolean().wrappedValue == expected)
     }
 
-    @Test func boolean_getFalse_whenNil() {
-        var value: String? = nil
-        let b = Binding<String?>(get: { value }, set: { value = $0 })
-        #expect(b.boolean().wrappedValue == false)
+    // MARK: - boolean() — mutation tests
+
+    @Test("Setting boolean to false writes nil")
+    func booleanSetFalseWritesNil() {
+        let box = ValueBox<String?>("hello")
+        box.binding.boolean().wrappedValue = false
+        #expect(box.value == nil)
     }
 
-    @Test func boolean_setFalse_writesNil() {
-        var value: String? = "hello"
-        let b = Binding<String?>(get: { value }, set: { value = $0 })
-        b.boolean().wrappedValue = false
-        #expect(value == nil)
+    @Test("Setting boolean to true leaves existing value unchanged")
+    func booleanSetTrueIsNoOp() {
+        let box = ValueBox<String?>("hello")
+        box.binding.boolean().wrappedValue = true
+        #expect(box.value == "hello")
     }
 
-    @Test func boolean_setTrue_isNoOp() {
-        var value: String? = "hello"
-        let b = Binding<String?>(get: { value }, set: { value = $0 })
-        b.boolean().wrappedValue = true
-        #expect(value == "hello") // unchanged
+    // MARK: - equals(_:) — get cases (parameterized)
+
+    @Test("Equals get reflects value equality", arguments: equalsGetCases)
+    func equalsGet(storedValue: Int?, expected: Bool) {
+        let box = ValueBox<Int?>(storedValue)
+        #expect(box.binding.equals(42).wrappedValue == expected)
     }
 
-    // MARK: - equals(_:)
+    // MARK: - equals(_:) — mutation tests
 
-    @Test func equals_getTrue_whenEqual() {
-        var value: Int? = 42
-        let b = Binding<Int?>(get: { value }, set: { value = $0 })
-        #expect(b.equals(42).wrappedValue == true)
+    @Test("Setting equals to true writes the target value")
+    func equalsSetTrueWritesValue() {
+        let box = ValueBox<Int?>(nil)
+        box.binding.equals(42).wrappedValue = true
+        #expect(box.value == 42)
     }
 
-    @Test func equals_getFalse_whenNotEqual() {
-        var value: Int? = 7
-        let b = Binding<Int?>(get: { value }, set: { value = $0 })
-        #expect(b.equals(42).wrappedValue == false)
+    @Test("Setting equals to false when currently equal writes nil")
+    func equalsSetFalseWhenEqualWritesNil() {
+        let box = ValueBox<Int?>(42)
+        box.binding.equals(42).wrappedValue = false
+        #expect(box.value == nil)
     }
 
-    @Test func equals_setTrue_writesValue() {
-        var value: Int? = nil
-        let b = Binding<Int?>(get: { value }, set: { value = $0 })
-        b.equals(42).wrappedValue = true
-        #expect(value == 42)
-    }
-
-    @Test func equals_setFalseWhenEqual_writesNil() {
-        var value: Int? = 42
-        let b = Binding<Int?>(get: { value }, set: { value = $0 })
-        b.equals(42).wrappedValue = false
-        #expect(value == nil)
-    }
-
-    @Test func equals_setFalseWhenNotEqual_isNoOp() {
-        var value: Int? = 7
-        let b = Binding<Int?>(get: { value }, set: { value = $0 })
-        b.equals(42).wrappedValue = false
-        #expect(value == 7) // unchanged
+    @Test("Setting equals to false when not equal is a no-op")
+    func equalsSetFalseWhenNotEqualIsNoOp() {
+        let box = ValueBox<Int?>(7)
+        box.binding.equals(42).wrappedValue = false
+        #expect(box.value == 7)
     }
 }

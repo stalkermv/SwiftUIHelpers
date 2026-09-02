@@ -7,57 +7,40 @@ import SwiftUI
 import Testing
 @testable import SwiftUIExtensions
 
+/// Expected text colors derived from the WCAG relative-luminance rule used by
+/// `Color.accessibleFontColor`: linearize each sRGB channel
+/// (`c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ^ 2.4`), then
+/// `L = 0.2126R + 0.7152G + 0.0722B`; `L > 0.179` picks black text.
+///
+/// - `#000000`: L = 0 → white text.
+/// - `#FFFFFF`: L = 1 → black text.
+/// - `#7F7F7F` ≈ 0.498: lin ≈ 0.214 → L > 0.179 → black text.
+/// - `#B3B3B3` ≈ 0.702: lin ≈ 0.452 → L > 0.179 → black text.
+/// - `#8460BD` ≈ (0.518, 0.376, 0.741): L ≈ 0.169 < 0.179 → white text.
+/// - `#0A0A0A`: L ≈ 0.001 → white text.
+private let accessibleFontColorCases: [(hex: Int, expectBlackText: Bool)] = [
+    (0x000000, false),
+    (0xFFFFFF, true),
+    (0x7F7F7F, true),
+    (0xB3B3B3, true),
+    (0x8460BD, false),
+    (0x0A0A0A, false),
+]
+
+@Suite("Accessible font color", .tags(.colors))
 struct ColorAccessibleFontColorTests {
-    // (0,0,0) — black: L=0 → white text
-    @Test func black_background_returns_white_text() throws {
-        let result = try #require(components(of: Color(red: 0, green: 0, blue: 0).accessibleFontColor))
-        #expect(abs(result.r - 1) < 0.001)
-        #expect(abs(result.g - 1) < 0.001)
-        #expect(abs(result.b - 1) < 0.001)
-    }
+    @Test("Background color resolves to the readable text color", arguments: accessibleFontColorCases)
+    func accessibleFontColorResolution(hex: Int, expectBlackText: Bool) throws {
+        let background = Color(
+            red: Double((hex >> 16) & 0xFF) / 255.0,
+            green: Double((hex >> 8) & 0xFF) / 255.0,
+            blue: Double(hex & 0xFF) / 255.0
+        )
 
-    // (1,1,1) — white: L=1 → black text
-    @Test func white_background_returns_black_text() throws {
-        let result = try #require(components(of: Color(red: 1, green: 1, blue: 1).accessibleFontColor))
-        #expect(abs(result.r - 0) < 0.001)
-        #expect(abs(result.g - 0) < 0.001)
-        #expect(abs(result.b - 0) < 0.001)
-    }
-
-    // #7F7F7F ≈ (0.498, 0.498, 0.498)
-    // lin(0.498) ≈ ((0.498+0.055)/1.055)^2.4 ≈ 0.2140
-    // L ≈ 0.2140 > 0.179 → black text
-    @Test func mid_gray_7F7F7F_returns_black_text() throws {
-        let result = try #require(components(of: Color(red: 0x7F/255.0, green: 0x7F/255.0, blue: 0x7F/255.0).accessibleFontColor))
-        #expect(abs(result.r - 0) < 0.001)
-        #expect(abs(result.g - 0) < 0.001)
-        #expect(abs(result.b - 0) < 0.001)
-    }
-
-    // #B3B3B3 ≈ (0.702, 0.702, 0.702)
-    // lin(0.702) ≈ 0.4520 → L ≈ 0.4520 > 0.179 → black text
-    @Test func light_gray_B3B3B3_returns_black_text() throws {
-        let result = try #require(components(of: Color(red: 0xB3/255.0, green: 0xB3/255.0, blue: 0xB3/255.0).accessibleFontColor))
-        #expect(abs(result.r - 0) < 0.001)
-        #expect(abs(result.g - 0) < 0.001)
-        #expect(abs(result.b - 0) < 0.001)
-    }
-
-    // #8460BD = (0x84/255≈0.518, 0x60/255≈0.376, 0xBD/255≈0.741)
-    // lin(0.518)≈0.2348, lin(0.376)≈0.1159, lin(0.741)≈0.5031
-    // L ≈ 0.2126*0.2348 + 0.7152*0.1159 + 0.0722*0.5031 ≈ 0.1691 < 0.179 → white text
-    @Test func purple_8460BD_returns_white_text() throws {
-        let result = try #require(components(of: Color(red: 0x84/255.0, green: 0x60/255.0, blue: 0xBD/255.0).accessibleFontColor))
-        #expect(abs(result.r - 1) < 0.001)
-        #expect(abs(result.g - 1) < 0.001)
-        #expect(abs(result.b - 1) < 0.001)
-    }
-
-    // #0A0A0A — near black: L ≈ 0.001 → white text
-    @Test func near_black_0A0A0A_returns_white_text() throws {
-        let result = try #require(components(of: Color(red: 0x0A/255.0, green: 0x0A/255.0, blue: 0x0A/255.0).accessibleFontColor))
-        #expect(abs(result.r - 1) < 0.001)
-        #expect(abs(result.g - 1) < 0.001)
-        #expect(abs(result.b - 1) < 0.001)
+        let text = try #require(components(of: background.accessibleFontColor))
+        let expected = expectBlackText ? 0.0 : 1.0
+        #expect(abs(text.r - expected) < 0.001)
+        #expect(abs(text.g - expected) < 0.001)
+        #expect(abs(text.b - expected) < 0.001)
     }
 }
