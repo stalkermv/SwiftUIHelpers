@@ -1,69 +1,67 @@
 import Testing
 @testable import SwiftUIHelpers
 
+// Argument tables live at file scope: `@Test(arguments:)` cannot reference
+// actor-isolated statics, and these rows must be plain Sendable values.
+private let multiplierCases: [(level: HierarchicalPaletteLevel, expected: Double)] = [
+    (.primary, 1.0),
+    (.secondary, 255.0 / 128.0),
+    (.tertiary, 255.0 / 64.0),
+    (.quaternary, 255.0 / 46.0),
+    (.quinary, 255.0 / 46.0),
+]
+
+private let rawLevelKnownCases: [(raw: Int, expected: HierarchicalPaletteLevel)] = [
+    (0, .primary),
+    (1, .secondary),
+    (4, .quinary),
+]
+
+private let rawLevelUnknownCases: [Int] = [99, -1]
+
+private let classifyOperationCases: [(raw: String, expectedKind: HierarchicalPaletteOperationKind)] = [
+    ("resolveStyle(levels: 0..<1)", .resolveStyle),
+    ("prepareText(level: 2, something)", .prepareText),
+    ("copyStyle(name: foreground, color: red)", .copyStyleForeground),
+    ("copyStyle(name: background, color: red)", .copyStyleOther),
+    ("primaryStyle", .primaryStyle),
+    ("somethingUnknown", .unknown),
+]
+
+private let parseLevelCases: [(token: String, raw: String, expected: Int?)] = [
+    ("level: ", "prepareText(level: 2, x)", 2),
+    ("level: ", "primaryStyle", nil),
+]
+
+@Suite("Hierarchical palette", .tags(.palette))
 struct PaletteTests {
     // MARK: - HierarchicalPaletteCompensation.multiplier(for:)
-    @Test func multiplier_primary_is_1() {
-        let c = HierarchicalPaletteCompensation.default
-        #expect(c.multiplier(for: .primary) == 1.0)
-    }
-    @Test func multiplier_secondary() {
-        let c = HierarchicalPaletteCompensation.default
-        #expect(abs(c.multiplier(for: .secondary) - 255.0/128.0) < 0.0001)
-    }
-    @Test func multiplier_tertiary() {
-        let c = HierarchicalPaletteCompensation.default
-        #expect(abs(c.multiplier(for: .tertiary) - 255.0/64.0) < 0.0001)
-    }
-    @Test func multiplier_quaternary() {
-        let c = HierarchicalPaletteCompensation.default
-        #expect(abs(c.multiplier(for: .quaternary) - 255.0/46.0) < 0.0001)
-    }
-    @Test func multiplier_quinary() {
-        let c = HierarchicalPaletteCompensation.default
-        #expect(abs(c.multiplier(for: .quinary) - 255.0/46.0) < 0.0001)
+    @Test("Multiplier compensates each hierarchy level", arguments: multiplierCases)
+    func multiplier(level: HierarchicalPaletteLevel, expected: Double) {
+        let compensation = HierarchicalPaletteCompensation.default
+        #expect(abs(compensation.multiplier(for: level) - expected) < 0.0001)
     }
 
     // MARK: - HierarchicalPaletteLevel(rawLevel:) fallback
-    @Test func rawLevel_known_values() {
-        #expect(HierarchicalPaletteLevel(rawLevel: 0) == .primary)
-        #expect(HierarchicalPaletteLevel(rawLevel: 1) == .secondary)
-        #expect(HierarchicalPaletteLevel(rawLevel: 4) == .quinary)
+    @Test("A known raw level maps to its case", arguments: rawLevelKnownCases)
+    func rawLevelKnown(raw: Int, expected: HierarchicalPaletteLevel) {
+        #expect(HierarchicalPaletteLevel(rawLevel: raw) == expected)
     }
-    @Test func rawLevel_unknown_fallback_to_primary() {
-        #expect(HierarchicalPaletteLevel(rawLevel: 99) == .primary)
-        #expect(HierarchicalPaletteLevel(rawLevel: -1) == .primary)
+
+    @Test("An unknown raw level falls back to primary", arguments: rawLevelUnknownCases)
+    func rawLevelUnknownFallsBackToPrimary(raw: Int) {
+        #expect(HierarchicalPaletteLevel(rawLevel: raw) == .primary)
     }
 
     // MARK: - classifyOperation
-    @Test func classifyOperation_resolveStyle() {
-        let raw = "resolveStyle(levels: 0..<1)"
-        #expect(HierarchicalPaletteIntrospection.classifyOperation(raw: raw) == .resolveStyle)
-    }
-    @Test func classifyOperation_prepareText() {
-        let raw = "prepareText(level: 2, something)"
-        #expect(HierarchicalPaletteIntrospection.classifyOperation(raw: raw) == .prepareText)
-    }
-    @Test func classifyOperation_copyStyleForeground() {
-        let raw = "copyStyle(name: foreground, color: red)"
-        #expect(HierarchicalPaletteIntrospection.classifyOperation(raw: raw) == .copyStyleForeground)
-    }
-    @Test func classifyOperation_copyStyleOther() {
-        let raw = "copyStyle(name: background, color: red)"
-        #expect(HierarchicalPaletteIntrospection.classifyOperation(raw: raw) == .copyStyleOther)
-    }
-    @Test func classifyOperation_primaryStyle() {
-        #expect(HierarchicalPaletteIntrospection.classifyOperation(raw: "primaryStyle") == .primaryStyle)
-    }
-    @Test func classifyOperation_unknown() {
-        #expect(HierarchicalPaletteIntrospection.classifyOperation(raw: "somethingUnknown") == .unknown)
+    @Test("classifyOperation recognizes each raw operation string", arguments: classifyOperationCases)
+    func classifyOperation(raw: String, expectedKind: HierarchicalPaletteOperationKind) {
+        #expect(HierarchicalPaletteIntrospection.classifyOperation(raw: raw) == expectedKind)
     }
 
     // MARK: - parseLevel
-    @Test func parseLevel_extractsNumber() {
-        #expect(HierarchicalPaletteIntrospection.parseLevel(after: "level: ", in: "prepareText(level: 2, x)") == 2)
-    }
-    @Test func parseLevel_missingToken_returnsNil() {
-        #expect(HierarchicalPaletteIntrospection.parseLevel(after: "level: ", in: "primaryStyle") == nil)
+    @Test("parseLevel extracts the trailing number after a token, or nil if absent", arguments: parseLevelCases)
+    func parseLevel(token: String, raw: String, expected: Int?) {
+        #expect(HierarchicalPaletteIntrospection.parseLevel(after: token, in: raw) == expected)
     }
 }
