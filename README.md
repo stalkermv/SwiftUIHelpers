@@ -11,8 +11,14 @@ A collection of SwiftUI extensions and helpers for iOS/macOS development. **Vers
 | iOS | 17.0 |
 | macOS | 14.0 |
 | Mac Catalyst | 17.0 |
+| tvOS | 17.0 |
+| watchOS | 10.0 |
 
-> **tvOS and watchOS were dropped in 2.0.** These platforms were never compiled or tested in CI. Consumers targeting tvOS/watchOS should pin `1.1.8`.
+A few APIs are not available on every platform:
+
+- tvOS: `onTouchDownGesture` and `embedInNavigation` are not available (no `DragGesture` / navigation bar title mode). `Font.TextStyle.largeTitle` maps to `title1`.
+- watchOS: the `FontProvider` API (`PlatformFont.resolving(font:dynamicTypeSize:)` and related types), `UIApplication.keyWindow` / `endEditing()` and `UIColor(light:dark:)` are not available.
+- tvOS and watchOS: `HoverGroup` compiles but `isGroupHovering` is always `false`. `scrollDisabled(_:during:)` needs tvOS 18 / watchOS 11.
 
 ---
 
@@ -274,7 +280,7 @@ These types stay in `SwiftUIHelpers` because the author's apps rely on them and 
 
 | # | Change | Old | New |
 |---|---|---|---|
-| B1 | Platform floor | iOS 15/macOS 13/tvOS 15/watchOS 8 | iOS 17/macOS 14/macCatalyst 17; tvOS & watchOS dropped — pin `1.1.8` if needed |
+| B1 | Platform floor | iOS 15/macOS 13/tvOS 15/watchOS 8 | iOS 17/macOS 14/macCatalyst 17/tvOS 17/watchOS 10 |
 | B2 | `SwiftUIExtensions` product | No SPM product; importable only by transitive accident | Add `.product(name: "SwiftUIExtensions", package: "SwiftUIHelpers")` to your target |
 | B3 | Custom detent API | `SwiftUIHelpers.PresentationDetent.fit` + `presentationDetent(_:)` | `FitPresentationDetent.fit` + `fitPresentationDetent()` |
 | B4 | InternalAPI deleted | 15+ underscored helpers public in `SwiftUIHelpers` | Moved to the separate `SwiftUIHelpersUnsafe` product (same names, not covered by semver) |

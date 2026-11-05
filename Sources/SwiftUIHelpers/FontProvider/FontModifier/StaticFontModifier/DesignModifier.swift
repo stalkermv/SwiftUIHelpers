@@ -1,3 +1,5 @@
+// FontProvider relies on UITraitCollection/UIFontMetrics, which watchOS does not have.
+#if !os(watchOS)
 import SwiftUI
 
 #if canImport(UIKit)
@@ -16,4 +18,5 @@ struct DesignModifier: FontModifier {
     func modify(_ fontDescriptor: inout PlatformFontDescriptor) {
         fontDescriptor = fontDescriptor.withDesign(design) ?? fontDescriptor
     }
-} 
+}
+#endif

@@ -1,3 +1,5 @@
+// FontProvider relies on UITraitCollection/UIFontMetrics, which watchOS does not have.
+#if !os(watchOS)
 //
 //  ItalicModifier.swift
 //  SwiftUIHelpers
@@ -24,3 +26,4 @@ struct ItalicModifier: StaticFontModifier {
         #endif
     }
 }
+#endif

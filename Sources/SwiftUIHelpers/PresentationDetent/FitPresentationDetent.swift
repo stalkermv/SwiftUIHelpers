@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+#if os(watchOS)
+import WatchKit
+#endif
 
 /// Specifies how a presented sheet should size itself relative to its content.
 ///
@@ -40,7 +43,9 @@ struct FitPresentationDetentModifier: ViewModifier {
     @State private var trackedSafeAreaTop: CGFloat = 0
 
     init(initial height: CGFloat = {
-        #if canImport(UIKit)
+        #if os(watchOS)
+        return WKInterfaceDevice.current().screenBounds.height / 2
+        #elseif canImport(UIKit)
         return UIScreen.main.bounds.height / 2
         #else
         return (NSScreen.main?.visibleFrame.height ?? 400) / 2

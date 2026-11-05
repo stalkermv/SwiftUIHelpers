@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftUIHelpers",
-    platforms: [.iOS(.v17), .macOS(.v14), .macCatalyst(.v17)],
+    platforms: [.iOS(.v17), .macOS(.v14), .macCatalyst(.v17), .tvOS(.v17), .watchOS(.v10)],
     products: [
         .library(name: "SwiftUIHelpers", targets: ["SwiftUIHelpers"]),
         .library(name: "SwiftUIExtensions", targets: ["SwiftUIExtensions"]),

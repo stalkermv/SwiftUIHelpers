@@ -2,7 +2,7 @@
 //  Created by Valeriy Malishevskyi on 06.05.2023.
 //
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(tvOS)
 import SwiftUI
 
 public extension View {

@@ -2,7 +2,7 @@
 //  Created by Valeriy Malishevskyi on 06.05.2023.
 //
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
 import UIKit
 
 public extension UIApplication {

@@ -25,10 +25,16 @@ public struct HoverGroup<Content: View>: View {
     }
 
     public var body: some View {
+        #if os(tvOS) || os(watchOS)
+        // No pointer on tvOS/watchOS: isGroupHovering stays false.
+        content
+            .environment(\.isGroupHovering, false)
+        #else
         content
             .contentShape(.rect)
             .onHover { isHovering = $0 }
             .environment(\.isGroupHovering, isHovering)
+        #endif
     }
 }
 

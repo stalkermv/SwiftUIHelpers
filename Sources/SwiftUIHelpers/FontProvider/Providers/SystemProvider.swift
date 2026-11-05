@@ -1,3 +1,5 @@
+// FontProvider relies on UITraitCollection/UIFontMetrics, which watchOS does not have.
+#if !os(watchOS)
 //
 //  SystemProvider.swift
 //  SwiftUIHelpers
@@ -45,3 +47,4 @@ struct SystemProvider: FontProvider {
             .addingAttributes(attributes) ?? descriptor
     }
 }
+#endif

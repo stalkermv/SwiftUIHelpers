@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+// DragGesture is not available on tvOS.
+#if !os(tvOS)
+
 extension View {
     public func onTouchDownGesture(callback: @escaping (Bool) -> Void) -> some View {
         modifier(OnTouchDownGestureModifier(callback: callback))
@@ -34,3 +37,4 @@ private struct OnTouchDownGestureModifier: ViewModifier {
                 })
     }
 }
+#endif
