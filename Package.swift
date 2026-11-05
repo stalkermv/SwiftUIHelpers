@@ -9,6 +9,7 @@ let package = Package(
     products: [
         .library(name: "SwiftUIHelpers", targets: ["SwiftUIHelpers"]),
         .library(name: "SwiftUIExtensions", targets: ["SwiftUIExtensions"]),
+        .library(name: "SwiftUIHelpersUnsafe", targets: ["SwiftUIHelpersUnsafe"]),
     ],
     dependencies: [
         .package(url: "https://github.com/stalkermv/SwiftHelpers.git", from: "1.0.0"),
@@ -27,6 +28,7 @@ let package = Package(
                 .product(name: "SwiftHelpers", package: "SwiftHelpers"),
             ]
         ),
+        .target(name: "SwiftUIHelpersUnsafe"),
         .testTarget(
             name: "SwiftUIExtensionsTests",
             dependencies: ["SwiftUIExtensions"],

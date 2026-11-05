@@ -16,6 +16,7 @@ A collection of SwiftUI extensions and helpers for iOS/macOS development. **Vers
 
 ---
 
+
 ## Installation
 
 ### Swift Package Manager
@@ -253,6 +254,16 @@ These types stay in `SwiftUIHelpers` because the author's apps rely on them and 
 
 ---
 
+## SwiftUIHelpersUnsafe
+
+`SwiftUIHelpersUnsafe` is a separate product with the helpers that used to live in `InternalAPI` in 1.x: `tightPadding`, `automaticPadding`, `ignoresAutomaticPadding`, `safeAreaInsets`, `scrollable`, `identified(by:)`, `colorMonochrome`, `addingBackgroundGroup`, `addingBackgroundLayer`, `defaultContext`, `stylisticAlternative`, `lineHeightMultiple`, `detached` / `DetachedView`, `PreferenceKey.delay` and `force`. The names are the same as in 1.x.
+
+> **Experimental.** These are thin wrappers around underscored SwiftUI internals. They can break on any OS update, are not covered by semver, and may change in minor releases.
+
+```swift
+.product(name: "SwiftUIHelpersUnsafe", package: "SwiftUIHelpers")
+```
+
 ## Known limitations
 
 > These probes instantiate `StateOrBinding` and `EnvironmentOrValue` directly outside SwiftUI's render loop, which means `@State`'s internal `_value` node is `nil` throughout every test. Reads fall back to the `initialValue` captured at init time, and writes via `wrappedValue` setter are no-ops (the setter calls through to a nil node). Consequently, the state round-trip test cannot assert a specific post-write value and instead only verifies the call does not crash. `update()` is similarly a no-op outside a live View body, so calling it here proves absence of crashes, not correctness of SwiftUI graph registration. `EnvironmentOrValue` with a key-path init reads from a freshly constructed `EnvironmentValues()` default rather than from any injected environment, so the returned value reflects the platform default (typically `.light` for `colorScheme`) rather than any real environment. These wrappers are designed for use inside live SwiftUI view bodies; verify behavior in previews before relying on them.
@@ -266,7 +277,7 @@ These types stay in `SwiftUIHelpers` because the author's apps rely on them and 
 | B1 | Platform floor | iOS 15/macOS 13/tvOS 15/watchOS 8 | iOS 17/macOS 14/macCatalyst 17; tvOS & watchOS dropped — pin `1.1.8` if needed |
 | B2 | `SwiftUIExtensions` product | No SPM product; importable only by transitive accident | Add `.product(name: "SwiftUIExtensions", package: "SwiftUIHelpers")` to your target |
 | B3 | Custom detent API | `SwiftUIHelpers.PresentationDetent.fit` + `presentationDetent(_:)` | `FitPresentationDetent.fit` + `fitPresentationDetent()` |
-| B4 | InternalAPI deleted | 15+ underscored helpers public in `SwiftUIHelpers` | Deleted (see [Deleted symbols](#deleted-in-20)) — copy from `git tag 1.1.8` if needed |
+| B4 | InternalAPI deleted | 15+ underscored helpers public in `SwiftUIHelpers` | Moved to the separate `SwiftUIHelpersUnsafe` product (same names, not covered by semver) |
 | B5 | Engine/Turbocharger conformances | `BackgroundStyle`/`TintShapeStyle: LabelColorShapeStyleProvider` under `canImport(Engine)` | Deleted — move conformance into the repo that owns Engine |
 | B6 | Demo removed | `HierarchicalPaletteDemoScreen` etc. | Deleted — no action needed |
 | B7 | `_softwareKeyboard` removed | Public private-API keyboard hack | Deleted — keep in app code if needed |
