@@ -11,6 +11,7 @@ private let projectedPointCases: [(unitPoint: UnitPoint, frame: CGRect, expected
 ]
 
 @Suite("Anchor point position", .tags(.layout))
+@MainActor
 struct PositionMathTests {
     @Test("Projected point resolves the unit point within the frame", arguments: projectedPointCases)
     func projectedPoint(unitPoint: UnitPoint, frame: CGRect, expectedPoint: CGPoint) {

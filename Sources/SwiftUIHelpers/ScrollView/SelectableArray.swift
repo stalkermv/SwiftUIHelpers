@@ -39,7 +39,9 @@ public struct SelectableArray<Element>: RandomAccessCollection, MutableCollectio
     
     /// Creates an instance initialized with the given array of elements.
     ///
-    /// - Parameter elements: An array of elements to initialize the collection.
+    /// - Parameters:
+    ///   - elements: An array of elements to initialize the collection.
+    ///   - selection: The initially selected element. Defaults to the first element when `nil`.
     public init(_ elements: [Element], selection: Element? = nil) {
         self.elements = elements
         _selection = State(initialValue: selection ?? elements.first)

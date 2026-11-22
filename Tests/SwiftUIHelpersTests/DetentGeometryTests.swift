@@ -21,6 +21,7 @@ private let resolvedDetentHeightCases: [(
 ]
 
 @Suite("Fit presentation detent", .tags(.detents))
+@MainActor
 struct DetentGeometryTests {
     @Test("Resolved detent height applies the safe-area reset threshold", arguments: resolvedDetentHeightCases)
     func resolvedDetentHeight(

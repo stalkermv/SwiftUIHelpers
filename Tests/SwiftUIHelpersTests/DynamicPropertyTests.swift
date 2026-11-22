@@ -28,7 +28,7 @@ struct StateOrBindingTests {
 
     @Test("Writing through projectedValue outside the render loop does not round-trip")
     func stateProjectedValueWrite() {
-        var s = StateOrBinding(1)
+        let s = StateOrBinding(1)
         s.projectedValue.wrappedValue = 99
         // Outside the render loop State has no storage node; reads return the
         // initial value — this is a deliberate implementation-regression check

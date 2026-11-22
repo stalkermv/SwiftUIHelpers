@@ -10,12 +10,7 @@ extension PlatformFont {
     /// > update; not covered by semver.
     public static func resolving(font: Font, dynamicTypeSize: DynamicTypeSize = .medium) -> PlatformFont {
         #if canImport(UIKit)
-        let traits = PlatformTraitCollection(
-            traitsFrom: [
-                .init(preferredContentSizeCategory: UIContentSizeCategory(dynamicTypeSize))
-        
-            ]
-        )
+        let traits = PlatformTraitCollection(preferredContentSizeCategory: UIContentSizeCategory(dynamicTypeSize))
         #else
         let traits = PlatformTraitCollection(preferredContentSizeCategory: dynamicTypeSize)
         #endif

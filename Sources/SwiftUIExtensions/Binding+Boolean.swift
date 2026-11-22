@@ -26,10 +26,13 @@ public extension Binding {
     /// - Note: Setting to `true` does not modify the original binding.
     ///   Handle that case at the call site if needed.
     func boolean<Wrapped>() -> Binding<Bool> where Value == Wrapped? {
-        Binding<Bool> {
-            wrappedValue != nil
-        } set: { newValue in
-            if !newValue { self.wrappedValue = nil }
-        }
+        self[dynamicMember: \.hasValue]
+    }
+}
+
+private extension Optional {
+    var hasValue: Bool {
+        get { self != nil }
+        set { if !newValue { self = nil } }
     }
 }
