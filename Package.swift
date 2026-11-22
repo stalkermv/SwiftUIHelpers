@@ -37,5 +37,9 @@ let package = Package(
             name: "SwiftUIHelpersTests",
             dependencies: ["SwiftUIHelpers"],
         ),
+        .testTarget(
+            name: "SwiftUIHelpersUnsafeTests",
+            dependencies: ["SwiftUIHelpersUnsafe"],
+        ),
     ]
 )

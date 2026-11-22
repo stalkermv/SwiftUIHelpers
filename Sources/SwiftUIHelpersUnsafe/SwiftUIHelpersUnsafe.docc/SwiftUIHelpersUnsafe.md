@@ -11,3 +11,10 @@ These helpers were part of `SwiftUIHelpers` 1.x (`InternalAPI`). They live in a 
 ```swift
 import SwiftUIHelpersUnsafe
 ```
+
+## Topics
+
+### Text Selection Group
+
+- ``SwiftUICore/View/textSelectionGroup()``
+- ``TextSelectionGroupModifier``

@@ -262,7 +262,7 @@ These types stay in `SwiftUIHelpers` because the author's apps rely on them and 
 
 ## SwiftUIHelpersUnsafe
 
-`SwiftUIHelpersUnsafe` is a separate product with the helpers that used to live in `InternalAPI` in 1.x: `tightPadding`, `automaticPadding`, `ignoresAutomaticPadding`, `safeAreaInsets`, `scrollable`, `identified(by:)`, `colorMonochrome`, `addingBackgroundGroup`, `addingBackgroundLayer`, `defaultContext`, `stylisticAlternative`, `lineHeightMultiple`, `detached` / `DetachedView`, `PreferenceKey.delay` and `force`. The names are the same as in 1.x. Since 2.0 it also has `colorMatrix(_:)`, `ShapeStyle.fillingContainerShape()`, `onEnvironmentChange(_:perform:)`, `onBindingChange(_:perform:)` and `listLinkedGroup(_:)` (watchOS only).
+`SwiftUIHelpersUnsafe` is a separate product with the helpers that used to live in `InternalAPI` in 1.x: `tightPadding`, `automaticPadding`, `ignoresAutomaticPadding`, `safeAreaInsets`, `scrollable`, `identified(by:)`, `colorMonochrome`, `addingBackgroundGroup`, `addingBackgroundLayer`, `defaultContext`, `stylisticAlternative`, `lineHeightMultiple`, `detached` / `DetachedView`, `PreferenceKey.delay` and `force`. The names are the same as in 1.x. Since 2.0 it also has `colorMatrix(_:)`, `ShapeStyle.fillingContainerShape()`, `onEnvironmentChange(_:perform:)`, `onBindingChange(_:perform:)`, `listLinkedGroup(_:)` (watchOS only), and `textSelectionGroup()` / `TextSelectionGroupModifier` (selects and copies several `Text` views as one on OS 27 and later; does nothing on earlier versions).
 
 > **Experimental.** These are thin wrappers around underscored SwiftUI internals. They can break on any OS update, are not covered by semver, and may change in minor releases.
 
