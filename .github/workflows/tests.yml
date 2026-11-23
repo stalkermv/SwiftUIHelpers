@@ -6,15 +6,24 @@ on:
   pull_request:
     branches: [ "main", "2.0" ]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   macos:
-    runs-on: macos-15
+    name: Swift Test
+    runs-on: xcode-27
 
     steps:
-      - name: Select Xcode 16.3
-        run: sudo xcode-select -s /Applications/Xcode_16.3.app
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
+      - name: Select Xcode 27.2
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app
 
       - name: Build
         run: swift build
@@ -22,53 +31,49 @@ jobs:
       - name: Test
         run: swift test
 
-  ios-compile:
-    # NOTE: Minimum-runtime (iOS 17) simulator testing is deferred until an iOS 17
-    # runtime is available on GitHub-hosted runners. This job compiles for a generic
-    # iOS destination to catch build regressions in the meantime.
-    runs-on: macos-15
+  apple-platforms:
+    name: Compile for ${{ matrix.destination }}
+    runs-on: xcode-27
+
+    strategy:
+      fail-fast: false
+      matrix:
+        destination:
+          - generic/platform=iOS
+          - generic/platform=tvOS
+          - generic/platform=watchOS
 
     steps:
-      - name: Select Xcode 16.3
-        run: sudo xcode-select -s /Applications/Xcode_16.3.app
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: actions/checkout@v4
+      - name: Select Xcode 27.2
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app
 
-      - name: iOS compile
+      - name: Resolve dependencies
+        run: swift package resolve
+
+      - name: Build for ${{ matrix.destination }}
+        env:
+          DESTINATION: ${{ matrix.destination }}
         run: |
-          xcodebuild build \
-            -scheme SwiftUIHelpers \
-            -destination 'generic/platform=iOS' \
-            CODE_SIGNING_ALLOWED=NO
-
-  tvos-compile:
-    runs-on: macos-15
-
-    steps:
-      - name: Select Xcode 16.3
-        run: sudo xcode-select -s /Applications/Xcode_16.3.app
-
-      - uses: actions/checkout@v4
-
-      - name: tvOS compile
-        run: |
-          xcodebuild build \
-            -scheme SwiftUIHelpers-Package \
-            -destination 'generic/platform=tvOS' \
-            CODE_SIGNING_ALLOWED=NO
-
-  watchos-compile:
-    runs-on: macos-15
-
-    steps:
-      - name: Select Xcode 16.3
-        run: sudo xcode-select -s /Applications/Xcode_16.3.app
-
-      - uses: actions/checkout@v4
-
-      - name: watchOS compile
-        run: |
-          xcodebuild build \
-            -scheme SwiftUIHelpers-Package \
-            -destination 'generic/platform=watchOS' \
-            CODE_SIGNING_ALLOWED=NO
+          log="${RUNNER_TEMP:-/tmp}/build.log"
+          build() {
+            xcodebuild build \
+              -scheme SwiftUIHelpers-Package \
+              -destination "$DESTINATION" \
+              -derivedDataPath "${RUNNER_TEMP:-/tmp}/SwiftUIHelpers-derived" \
+              CODE_SIGNING_ALLOWED=NO 2>&1 | tee "$log"
+            return "${PIPESTATUS[0]}"
+          }
+          if ! build; then
+            # Some runners come without the device platform that Xcode needs for a
+            # generic destination. Install it and retry; fail on any other error.
+            platform="${DESTINATION#generic/platform=}"
+            if grep -q "is not installed" "$log"; then
+              xcodebuild -downloadPlatform "$platform"
+              build
+            else
+              exit 1
+            fi
+          fi

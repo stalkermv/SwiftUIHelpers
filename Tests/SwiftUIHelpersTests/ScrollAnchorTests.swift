@@ -18,6 +18,7 @@ private let anchorValueCases: [(index: Int, count: Int, expectedX: CGFloat)] = [
     (1, 3, 0.5), // middle of three → centered (also covers the y invariant below)
 ]
 
+@MainActor
 @Suite("Default scroll anchor", .tags(.scroll))
 struct ScrollAnchorTests {
     @Test("Out-of-range or too-small counts produce no anchor", arguments: noAnchorCases)
