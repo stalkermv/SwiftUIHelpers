@@ -30,8 +30,10 @@ A few APIs are not available on every platform:
 Add the following to the `dependencies` array in your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/stalkermv/SwiftUIHelpers", from: "2.0.0")
+.package(url: "https://github.com/stalkermv/SwiftUIHelpers", from: "2.0.0-beta.1")
 ```
+
+2.0 is currently a pre-release, so the requirement has to name it; `from: "2.0.0"` does not resolve pre-releases.
 
 Then add **both products** to your target's `dependencies`:
 
@@ -265,6 +267,8 @@ These types stay in `SwiftUIHelpers` because the author's apps rely on them and 
 `SwiftUIHelpersUnsafe` is a separate product with the helpers that used to live in `InternalAPI` in 1.x: `tightPadding`, `automaticPadding`, `ignoresAutomaticPadding`, `safeAreaInsets`, `scrollable`, `identified(by:)`, `colorMonochrome`, `addingBackgroundGroup`, `addingBackgroundLayer`, `defaultContext`, `stylisticAlternative`, `lineHeightMultiple`, `detached` / `DetachedView`, `PreferenceKey.delay` and `force`. The names are the same as in 1.x. Since 2.0 it also has `colorMatrix(_:)`, `ShapeStyle.fillingContainerShape()`, `onEnvironmentChange(_:perform:)`, `onBindingChange(_:perform:)`, `listLinkedGroup(_:)` (watchOS only), and `textSelectionGroup()` / `TextSelectionGroupModifier` (selects and copies several `Text` views as one on OS 27 and later; does nothing on earlier versions).
 
 > **Experimental.** These are thin wrappers around underscored SwiftUI internals. They can break on any OS update, are not covered by semver, and may change in minor releases.
+>
+> `textSelectionGroup()` goes further: it looks up a private SwiftUI modifier by name at run time. Without that modifier it does nothing (`TextSelectionGroupModifier.isSupported` tells you which case applies). Do not ship it in App Store apps.
 
 ```swift
 .product(name: "SwiftUIHelpersUnsafe", package: "SwiftUIHelpers")
