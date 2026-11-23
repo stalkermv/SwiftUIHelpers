@@ -16,7 +16,7 @@ extension View {
     ///
     /// This is an experimental helper that uses a private SwiftUI modifier:
     ///
-    /// - The modifier exists in OS 27 and later. On earlier versions, and whenever it cannot be
+    /// - The modifier exists in OS 27.2 and later (it is missing on 27.0). On earlier versions, and whenever it cannot be
     ///   found or does not look as expected, `textSelectionGroup()` does nothing and the view
     ///   behaves as if it were not applied. Check ``TextSelectionGroupModifier/isSupported``
     ///   to find out which case applies.

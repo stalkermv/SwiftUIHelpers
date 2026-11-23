@@ -14,9 +14,9 @@ import AppKit
 @MainActor
 @Suite("View.textSelectionGroup()")
 struct TextSelectionGroupTests {
-    /// The private modifier exists in OS 27 and later.
+    /// The private modifier exists in OS 27.2 and later; it is missing on 27.0.
     private static let osHasPrivateModifier = ProcessInfo.processInfo.isOperatingSystemAtLeast(
-        OperatingSystemVersion(majorVersion: 27, minorVersion: 0, patchVersion: 0)
+        OperatingSystemVersion(majorVersion: 27, minorVersion: 2, patchVersion: 0)
     )
 
     @Test("Finds the private modifier exactly when the OS has it")
@@ -100,7 +100,7 @@ struct TextSelectionGroupTests {
 
         // Without `textSelectionGroup()`, each `Text` gets its own interaction view.
         #expect(ungroupedCount == 2)
-        // On OS 27 and later SwiftUI shares one interaction view for the group; on earlier
+        // On OS 27.2 and later SwiftUI shares one interaction view for the group; on earlier
         // versions the modifier does nothing, so the count is unchanged.
         #expect(groupedCount == (Self.osHasPrivateModifier ? 1 : 2))
     }

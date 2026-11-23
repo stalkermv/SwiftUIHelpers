@@ -16,7 +16,7 @@ All notable changes to this project are documented in this file.
 ### Added
 
 - `SwiftUIHelpersUnsafe`: `colorMatrix(_:)`, `ShapeStyle.fillingContainerShape()`, `onEnvironmentChange(_:perform:)`, `onBindingChange(_:perform:)`, `listLinkedGroup(_:)` (watchOS only) and `textSelectionGroup()`.
-- `textSelectionGroup()` groups several `Text` views into one selection region. It uses a private SwiftUI modifier that exists in OS 27 and later, does nothing where the modifier is missing, and should not be shipped in App Store apps.
+- `textSelectionGroup()` groups several `Text` views into one selection region. It uses a private SwiftUI modifier that exists in OS 27.2 and later, does nothing where the modifier is missing, and should not be shipped in App Store apps.
 
 ### Fixed
 
