@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
+## 2.0.0-beta.2 - 2026-11-23
+
+### Fixed
+
+- `textSelectionGroup()` documentation and tests now state the correct OS version: the private modifier it uses exists in OS 27.2 and later and is missing on 27.0, where the helper does nothing.
+- CI runs on Xcode 27.2 and compiles for iOS, tvOS and watchOS.
+
 ## 2.0.0-beta.1 - 2026-11-23
 
 2.0 is a breaking release. The README has a migration guide (1.x to 2.0) with every change and the list of removed symbols.

@@ -30,7 +30,7 @@ A few APIs are not available on every platform:
 Add the following to the `dependencies` array in your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/stalkermv/SwiftUIHelpers", from: "2.0.0-beta.1")
+.package(url: "https://github.com/stalkermv/SwiftUIHelpers", from: "2.0.0-beta.2")
 ```
 
 2.0 is currently a pre-release, so the requirement has to name it; `from: "2.0.0"` does not resolve pre-releases.
