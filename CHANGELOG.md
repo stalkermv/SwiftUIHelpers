@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented in this file.
 
+## 2.0.0-beta.3 - 2026-11-24
+
+### Changed
+
+- `View.presentationDetent(_:)` is the public API again, as in 1.x: `.presentationDetent(.fit)`. The detent type is still named `FitPresentationDetent` so that it does not clash with SwiftUI's `PresentationDetent`; call sites only write `.fit`.
+
+### Removed
+
+- `View.fitPresentationDetent()`, which existed only in `2.0.0-beta.1` and `2.0.0-beta.2`. Use `.presentationDetent(.fit)`.
+
 ## 2.0.0-beta.2 - 2026-11-23
 
 ### Fixed

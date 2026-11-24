@@ -77,7 +77,7 @@ Then add **both products** to your target's `dependencies`:
 | `HierarchicalPaletteShapeStyle`, `HierarchicalPaletteConfiguration` (**experimental**) | `SwiftUIHelpers` |
 | `LabelColorShapeStyleProvider` (**experimental**) | `SwiftUIHelpers` |
 | `PlatformFont.resolving(font:dynamicTypeSize:)` (**experimental**) | `SwiftUIHelpers` |
-| `FitPresentationDetent` + `View.fitPresentationDetent()` | `SwiftUIHelpers` |
+| `FitPresentationDetent` + `View.presentationDetent(_:)` (`.presentationDetent(.fit)`) | `SwiftUIHelpers` |
 | `NavigationLinkStyle` | `SwiftUIHelpers` |
 | `Previewable` | `SwiftUIHelpers` |
 | `GeometryEffectView`, `View.geometryEffectLayer(_:)` | `SwiftUIHelpers` |
@@ -199,7 +199,7 @@ struct MyPalette: HierarchicalPaletteShapeStyle {
 ```swift
 .sheet(isPresented: $show) {
     ContentView()
-        .fitPresentationDetent()
+        .presentationDetent(.fit)
 }
 ```
 
@@ -286,7 +286,7 @@ These types stay in `SwiftUIHelpers` because the author's apps rely on them and 
 |---|---|---|---|
 | B1 | Platform floor | iOS 15/macOS 13/tvOS 15/watchOS 8 | iOS 17/macOS 14/macCatalyst 17/tvOS 17/watchOS 10 |
 | B2 | `SwiftUIExtensions` product | No SPM product; importable only by transitive accident | Add `.product(name: "SwiftUIExtensions", package: "SwiftUIHelpers")` to your target |
-| B3 | Custom detent API | `SwiftUIHelpers.PresentationDetent.fit` + `presentationDetent(_:)` | `FitPresentationDetent.fit` + `fitPresentationDetent()` |
+| B3 | Detent type name | `SwiftUIHelpers.PresentationDetent` | `FitPresentationDetent`, so it no longer clashes with SwiftUI's `PresentationDetent`. The call `.presentationDetent(.fit)` is unchanged; this only matters if you wrote the type name yourself |
 | B4 | InternalAPI deleted | 15+ underscored helpers public in `SwiftUIHelpers` | Moved to the separate `SwiftUIHelpersUnsafe` product (same names, not covered by semver) |
 | B5 | Engine/Turbocharger conformances | `BackgroundStyle`/`TintShapeStyle: LabelColorShapeStyleProvider` under `canImport(Engine)` | Deleted — move conformance into the repo that owns Engine |
 | B6 | Demo removed | `HierarchicalPaletteDemoScreen` etc. | Deleted — no action needed |

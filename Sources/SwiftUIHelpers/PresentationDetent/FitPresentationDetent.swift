@@ -15,19 +15,31 @@ import WatchKit
 /// Use `.fit` to automatically adjust the sheet height to its content, rather
 /// than using predefined heights.
 ///
-/// Example usage:
+/// The type has its own name so that it does not clash with SwiftUI's
+/// `PresentationDetent` when both modules are imported. At the call site you only
+/// write `.fit`:
+///
 /// ```swift
-/// .fitPresentationDetent()
+/// .sheet(isPresented: $show) {
+///     ContentView()
+///         .presentationDetent(.fit)
+/// }
 /// ```
+///
+/// SwiftUI's own `presentationDetents(_:)` (plural) is a different modifier and
+/// can be used in the same file.
 public enum FitPresentationDetent {
     case fit
 }
 
 extension View {
-    /// Applies a fit presentation detent to the view, sizing the sheet to its content.
+    /// Applies a custom presentation detent to the view.
     ///
+    /// Use this modifier with `.fit` to size the sheet to its content.
+    ///
+    /// - Parameter detent: The detent to apply, `.fit`.
     /// - Returns: A view that presents using a height-fitting detent.
-    public func fitPresentationDetent() -> some View {
+    public func presentationDetent(_ detent: FitPresentationDetent) -> some View {
         modifier(FitPresentationDetentModifier())
     }
 }
