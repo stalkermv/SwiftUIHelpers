@@ -30,16 +30,8 @@ extension UIFont.Weight {
         case .black:
             self = .black
         default:
-            self = weight.rawValue.map(UIFont.Weight.init(rawValue:)) ?? .regular
+            self = .regular
         }
-    }
-}
-
-extension Font.Weight {
-    var rawValue: CGFloat? {
-        let mirror = Mirror(reflecting: self)
-        let value = mirror.children.first?.value as? CGFloat
-        return value
     }
 }
 #endif

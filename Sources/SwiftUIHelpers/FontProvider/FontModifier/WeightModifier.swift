@@ -1,3 +1,5 @@
+// FontProvider relies on UITraitCollection/UIFontMetrics, which watchOS does not have.
+#if !os(watchOS)
 //
 //  WeightModifier.swift
 //  SwiftUIHelpers
@@ -24,4 +26,4 @@ struct WeightModifier: FontModifier {
         #endif
     }
 }
-
+#endif

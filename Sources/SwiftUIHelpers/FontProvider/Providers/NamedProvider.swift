@@ -1,3 +1,5 @@
+// FontProvider relies on UITraitCollection/UIFontMetrics, which watchOS does not have.
+#if !os(watchOS)
 //
 //  NamedProvider.swift
 //  SwiftUIHelpers
@@ -32,8 +34,9 @@ struct NamedProvider: FontProvider {
         }
 
         return PlatformFontDescriptor(fontAttributes: [
-            .family: name,
+            .name: name,
             .size: scaledSize
         ])
     }
 }
+#endif

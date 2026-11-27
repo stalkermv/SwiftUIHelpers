@@ -1,3 +1,5 @@
+// FontProvider relies on UITraitCollection/UIFontMetrics, which watchOS does not have.
+#if !os(watchOS)
 import SwiftUI
 
 #if canImport(UIKit)
@@ -33,7 +35,11 @@ extension PlatformTextStyle {
     init(_ style: Font.TextStyle) {
         #if canImport(UIKit)
         switch style {
+        #if os(tvOS)
+        case .largeTitle: self = .title1 // tvOS has no UIFont.TextStyle.largeTitle
+        #else
         case .largeTitle: self = .largeTitle
+        #endif
         case .title: self = .title1
         case .title2: self = .title2
         case .title3: self = .title3
@@ -78,8 +84,7 @@ extension PlatformFontWeight {
         case .bold: self = .bold
         case .heavy: self = .heavy
         case .black: self = .black
-        default: self = weight.rawValue
-                .map(PlatformFont.Weight.init(rawValue:)) ?? .regular
+        default: self = .regular
         }
         #else
         switch weight {
@@ -92,18 +97,9 @@ extension PlatformFontWeight {
         case .bold: self = .bold
         case .heavy: self = .heavy
         case .black: self = .black
-        default: self = weight.rawValue
-                .map(PlatformFont.Weight.init(rawValue:)) ?? .regular
+        default: self = .regular
         }
         #endif
-    }
-}
-
-extension Font.Weight {
-    var rawValue: CGFloat? {
-        let mirror = Mirror(reflecting: self)
-        let value = mirror.children.first?.value as? CGFloat
-        return value
     }
 }
 
@@ -127,4 +123,5 @@ extension PlatformSystemDesign {
         }
         #endif
     }
-} 
+}
+#endif

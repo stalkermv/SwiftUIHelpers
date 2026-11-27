@@ -1,3 +1,5 @@
+// FontProvider relies on UITraitCollection/UIFontMetrics, which watchOS does not have.
+#if !os(watchOS)
 import SwiftUI
 
 #if canImport(UIKit)
@@ -13,4 +15,5 @@ struct SerifModifier: StaticFontModifier {
         let designModifier = DesignModifier(.serif)
         designModifier.modify(&fontDescriptor)
     }
-} 
+}
+#endif

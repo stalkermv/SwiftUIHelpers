@@ -1,5 +1,5 @@
 //
-//  View+defaultScrollAnchor.swift
+//  View+DefaultScrollAnchor.swift
 //  SwiftUIHelpers
 //
 //  Created by Valeriy Malishevskyi on 28.09.2024.
@@ -16,19 +16,17 @@ extension View {
 struct DefaultScrollAnchorModifier: ViewModifier {
     var index: Int
     var count: Int
-    
-    private var defaultScrollAnchor: UnitPoint? {
-        let index = CGFloat(self.index)
-        let count = CGFloat(self.count)
-        let offset: CGFloat = index / (count - 1)
-        return .init(x: offset, y: 0.5)
-    }
-    
+
     func body(content: Content) -> some View {
-        if #available(iOS 17, macOS 14.4, tvOS 17.4, watchOS 10.4, *) {
-            content.defaultScrollAnchor(defaultScrollAnchor)
-        } else {
-            content
-        }
+        content.defaultScrollAnchor(DefaultScrollAnchorModifier.anchor(index: index, count: count))
+    }
+
+    /// Returns the scroll anchor for the given index and count.
+    ///
+    /// Returns `nil` when `count <= 1` or `index` is out of bounds.
+    static func anchor(index: Int, count: Int) -> UnitPoint? {
+        guard count > 1, index >= 0, index < count else { return nil }
+        let offset = CGFloat(index) / CGFloat(count - 1)
+        return UnitPoint(x: offset, y: 0.5)
     }
 }

@@ -64,7 +64,7 @@ enum HierarchicalPaletteIntrospection {
         Mirror(reflecting: value).children.first { $0.label == label }?.value
     }
 
-    private static func classifyOperation(raw: String) -> HierarchicalPaletteOperationKind {
+    internal static func classifyOperation(raw: String) -> HierarchicalPaletteOperationKind {
         if raw.contains("resolveStyle") { return .resolveStyle }
         if raw.contains("prepareText") { return .prepareText }
 
@@ -91,7 +91,7 @@ enum HierarchicalPaletteIntrospection {
         return lowerBound
     }
 
-    private static func parseLevel(after token: String, in raw: String) -> Int? {
+    internal static func parseLevel(after token: String, in raw: String) -> Int? {
         guard let range = raw.range(of: token) else { return nil }
 
         let suffix = raw[range.upperBound...]

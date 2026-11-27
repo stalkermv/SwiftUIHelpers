@@ -5,7 +5,7 @@
 //  Created by Valeriy Malishevskyi on 05.08.2024.
 //
 
-#if canImport(UIKit)
+#if canImport(UIKit) && !os(watchOS)
 import SwiftUI
 
 extension UIColor {

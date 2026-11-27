@@ -86,18 +86,3 @@ public struct ApplicationMiddlewareBuilder {
     
     
 }
-
-#if canImport(Engine)
-import Engine
-
-extension ApplicationMiddlewareBuilder {
-    @MainActor public static func buildBlock<each M: ApplicationMiddleware>(_ middlewares: repeat each M) -> some ViewModifier {
-        var result: AnyViewModifier = AnyViewModifier(EmptyModifier())
-        for middleware in repeat each middlewares {
-            result = result.concat(middleware)
-        }
-        
-        return result
-    }
-}
-#endif

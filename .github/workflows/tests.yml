@@ -1,24 +1,79 @@
-# This workflow will build a Swift project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-swift
-
-name: Test
+name: Tests
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "2.0" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "2.0" ]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-
-    runs-on: macos-15
+  macos:
+    name: Swift Test
+    runs-on: xcode-27
 
     steps:
-    - name: Select Xcode 16.3
-      run: sudo xcode-select -s /Applications/Xcode_16.3.app
-    - uses: actions/checkout@v4
-    - name: Build
-      run: swift build -v
-    - name: Run tests
-      run: swift test -v
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 27.2
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app
+
+      - name: Build
+        run: swift build
+
+      - name: Test
+        run: swift test
+
+  apple-platforms:
+    name: Compile for ${{ matrix.destination }}
+    runs-on: xcode-27
+
+    strategy:
+      fail-fast: false
+      matrix:
+        destination:
+          - generic/platform=iOS
+          - generic/platform=tvOS
+          - generic/platform=watchOS
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 27.2
+        run: sudo xcode-select -s /Applications/Xcode_27.2.app
+
+      - name: Resolve dependencies
+        run: swift package resolve
+
+      - name: Build for ${{ matrix.destination }}
+        env:
+          DESTINATION: ${{ matrix.destination }}
+        run: |
+          log="${RUNNER_TEMP:-/tmp}/build.log"
+          build() {
+            xcodebuild build \
+              -scheme SwiftUIHelpers-Package \
+              -destination "$DESTINATION" \
+              -derivedDataPath "${RUNNER_TEMP:-/tmp}/SwiftUIHelpers-derived" \
+              CODE_SIGNING_ALLOWED=NO 2>&1 | tee "$log"
+            return "${PIPESTATUS[0]}"
+          }
+          if ! build; then
+            # Some runners come without the device platform that Xcode needs for a
+            # generic destination. Install it and retry; fail on any other error.
+            platform="${DESTINATION#generic/platform=}"
+            if grep -q "is not installed" "$log"; then
+              xcodebuild -downloadPlatform "$platform"
+              build
+            else
+              exit 1
+            fi
+          fi

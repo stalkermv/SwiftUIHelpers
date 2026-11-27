@@ -5,35 +5,41 @@ import PackageDescription
 
 let package = Package(
     name: "SwiftUIHelpers",
-    platforms: [.iOS(.v15), .macOS(.v13), .tvOS(.v15), .watchOS(.v8)],
+    platforms: [.iOS(.v17), .macOS(.v14), .macCatalyst(.v17), .tvOS(.v17), .watchOS(.v10)],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(name: "SwiftUIHelpers", targets: ["SwiftUIHelpers"]),
+        .library(name: "SwiftUIExtensions", targets: ["SwiftUIExtensions"]),
+        .library(name: "SwiftUIHelpersUnsafe", targets: ["SwiftUIHelpersUnsafe"]),
     ],
     dependencies: [
         .package(url: "https://github.com/stalkermv/SwiftHelpers.git", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-log", from: "1.10.0")
     ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "SwiftUIHelpers",
             dependencies: [
                 "SwiftUIExtensions",
                 .product(name: "SwiftHelpers", package: "SwiftHelpers"),
-                .product(name: "Logging", package: "swift-log")
             ]
         ),
         .target(
             name: "SwiftUIExtensions",
             dependencies: [
-                .product(name: "SwiftHelpers", package: "SwiftHelpers")
+                .product(name: "SwiftHelpers", package: "SwiftHelpers"),
             ]
         ),
+        .target(name: "SwiftUIHelpersUnsafe"),
         .testTarget(
             name: "SwiftUIExtensionsTests",
             dependencies: ["SwiftUIExtensions"],
+        ),
+        .testTarget(
+            name: "SwiftUIHelpersTests",
+            dependencies: ["SwiftUIHelpers"],
+        ),
+        .testTarget(
+            name: "SwiftUIHelpersUnsafeTests",
+            dependencies: ["SwiftUIHelpersUnsafe"],
         ),
     ]
 )

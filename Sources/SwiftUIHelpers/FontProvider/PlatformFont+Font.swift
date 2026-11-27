@@ -1,15 +1,16 @@
+// FontProvider relies on UITraitCollection/UIFontMetrics, which watchOS does not have.
+#if !os(watchOS)
 import SwiftUI
 import SwiftUIExtensions
 
 extension PlatformFont {
+    /// Resolves a SwiftUI `Font` to a platform font for the given dynamic type size.
+    ///
+    /// > EXPERIMENTAL — relies on private SwiftUI internals; may break without warning on any OS
+    /// > update; not covered by semver.
     public static func resolving(font: Font, dynamicTypeSize: DynamicTypeSize = .medium) -> PlatformFont {
         #if canImport(UIKit)
-        let traits = PlatformTraitCollection(
-            traitsFrom: [
-                .init(preferredContentSizeCategory: UIContentSizeCategory(dynamicTypeSize))
-        
-            ]
-        )
+        let traits = PlatformTraitCollection(preferredContentSizeCategory: UIContentSizeCategory(dynamicTypeSize))
         #else
         let traits = PlatformTraitCollection(preferredContentSizeCategory: dynamicTypeSize)
         #endif
@@ -88,13 +89,15 @@ extension Font {
                 return nil
             }
             
-            let weight = mirror.descendant("modifier", "weight") as! Font.Weight
+            guard let weight = mirror.descendant("modifier", "weight") as? Font.Weight else {
+                return nil
+            }
             let weightModifier = WeightModifier(weight: PlatformFontWeight(weight))
             
             return ModifierProvider.init(base: provider, modifier: weightModifier)
         default:
-            print("Unknown font provider: \(provider)")
             return nil
         }
     }
-} 
+}
+#endif

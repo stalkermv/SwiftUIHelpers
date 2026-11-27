@@ -1,7 +1,9 @@
 import SwiftUI
-import Logging
 
 /// A shape style protocol that resolves semantic palette colors by hierarchical level.
+///
+/// > EXPERIMENTAL — relies on private SwiftUI internals; may break without warning on any OS
+/// > update; not covered by semver.
 ///
 /// Use this protocol to define type-driven semantic colors that can participate in SwiftUI
 /// hierarchical foreground resolution (`primary`, `secondary`, `tertiary`, and so on).
@@ -63,13 +65,6 @@ public extension HierarchicalPaletteShapeStyle {
 
         if let compensationMultiplier {
             resolvedColor = resolvedColor.opacity(compensationMultiplier)
-        }
-
-        if configuration.loggingEnabled {
-            let compensationDescription = compensationMultiplier.map { String($0) } ?? "none"
-            Logger.hierarchicalPalette.debug(
-                "style=\(String(describing: Self.self)) op=\(operationInfo.kind.rawValue) level=\(requestedLevel.rawValue) src=\(operationInfo.levelSource) role=\(HierarchicalPaletteIntrospection.role(from: shape)) substrate=\(HierarchicalPaletteIntrospection.substrate(from: shape)) compensation=\(compensationDescription)"
-            )
         }
 
         resolvedColor._apply(to: &shape)

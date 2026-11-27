@@ -1,3 +1,5 @@
+// FontProvider relies on UITraitCollection/UIFontMetrics, which watchOS does not have.
+#if !os(watchOS)
 //
 //  ModifierProvider.swift
 //  SwiftUIHelpers
@@ -19,3 +21,4 @@ struct ModifierProvider: FontProvider {
         return descriptor
     }
 }
+#endif

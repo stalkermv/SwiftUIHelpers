@@ -1,3 +1,5 @@
+// FontProvider relies on UITraitCollection/UIFontMetrics, which watchOS does not have.
+#if !os(watchOS)
 import SwiftUI
 
 #if canImport(UIKit)
@@ -19,4 +21,5 @@ extension FontProvider {
         return NSFont(descriptor: fontDescriptor(with: traitCollection), size: 0) ?? .systemFont(ofSize: NSFont.systemFontSize)
         #endif
     }
-} 
+}
+#endif

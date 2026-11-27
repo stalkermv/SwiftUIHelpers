@@ -12,7 +12,12 @@ extension UIFont.TextStyle {
     public init(_ style: Font.TextStyle) {
         switch style {
         case .largeTitle:
+            #if os(tvOS)
+            // tvOS has no UIFont.TextStyle.largeTitle.
+            self = .title1
+            #else
             self = .largeTitle
+            #endif
         case .title:
             self = .title1
         case .title2:
@@ -33,7 +38,7 @@ extension UIFont.TextStyle {
             self = .caption1
         case .caption2:
             self = .caption2
-        default:
+        @unknown default:
             self = .body
         }
     }

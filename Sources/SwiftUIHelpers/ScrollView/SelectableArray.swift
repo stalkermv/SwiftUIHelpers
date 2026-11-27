@@ -39,7 +39,9 @@ public struct SelectableArray<Element>: RandomAccessCollection, MutableCollectio
     
     /// Creates an instance initialized with the given array of elements.
     ///
-    /// - Parameter elements: An array of elements to initialize the collection.
+    /// - Parameters:
+    ///   - elements: An array of elements to initialize the collection.
+    ///   - selection: The initially selected element. Defaults to the first element when `nil`.
     public init(_ elements: [Element], selection: Element? = nil) {
         self.elements = elements
         _selection = State(initialValue: selection ?? elements.first)
@@ -68,9 +70,20 @@ extension SelectableArray where Element : Identifiable {
         self.elements = elements
         _selection = State(initialValue: elements.first { $0.id == selection })
     }
+
+    /// Returns `true` when both `elements` and `selectionIndex` are equal.
+    ///
+    /// Use this instead of `==` when selection state must be considered;
+    /// `==` on `SelectableArray` compares elements only.
+    @MainActor public func isSameSelection(as other: Self) -> Bool {
+        selectionIndex == other.selectionIndex
+            && elements.count == other.elements.count
+            && zip(elements, other.elements).allSatisfy { $0.id == $1.id }
+    }
 }
 
 extension SelectableArray: Equatable where Element: Equatable {
+    /// Equality compares elements only; use `isSameSelection(as:)` to include selection.
     public static func == (lhs: SelectableArray<Element>, rhs: SelectableArray<Element>) -> Bool {
         lhs.elements == rhs.elements
     }

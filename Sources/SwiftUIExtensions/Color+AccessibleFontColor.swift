@@ -5,27 +5,38 @@
 import SwiftUI
 
 #if canImport(UIKit)
+import UIKit
 typealias PlatformColor = UIColor
 #else
+import AppKit
 typealias PlatformColor = NSColor
 #endif
 
 public extension Color {
-    /// This color is either black or white, whichever is more accessible when viewed against the scrum color.
+    /// Returns `.black` or `.white` — whichever provides higher contrast against
+    /// this color — calculated using the WCAG 2.1 relative luminance formula.
+    ///
+    /// Supported on iOS, macOS, and macCatalyst.
     var accessibleFontColor: Color {
         var red: CGFloat = 0
         var green: CGFloat = 0
         var blue: CGFloat = 0
-        PlatformColor(self).getRed(&red, green: &green, blue: &blue, alpha: nil)
-        return isLightColor(red: red, green: green, blue: blue) ? .black : .white
-    }
-    
-    private func isLightColor(red: CGFloat, green: CGFloat, blue: CGFloat) -> Bool {
-        let lightRed = red > 0.65
-        let lightGreen = green > 0.65
-        let lightBlue = blue > 0.65
-        
-        let lightness = [lightRed, lightGreen, lightBlue].reduce(0) { $1 ? $0 + 1 : $0 }
-        return lightness >= 2
+        #if canImport(UIKit)
+        guard PlatformColor(self).getRed(&red, green: &green, blue: &blue, alpha: nil) else {
+            return .black
+        }
+        #else
+        guard let srgb = PlatformColor(self).usingColorSpace(.sRGB) else {
+            return .black
+        }
+        srgb.getRed(&red, green: &green, blue: &blue, alpha: nil)
+        #endif
+        func linearize(_ c: CGFloat) -> CGFloat {
+            c <= 0.03928 ? c / 12.92 : pow((c + 0.055) / 1.055, 2.4)
+        }
+        let L = 0.2126 * linearize(red)
+              + 0.7152 * linearize(green)
+              + 0.0722 * linearize(blue)
+        return L > 0.179 ? .black : .white
     }
 }
