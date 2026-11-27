@@ -28,7 +28,7 @@ import SwiftUI
 /// You can also pass an explicit value:
 ///
 /// ```swift
-/// ExampleView(colorScheme: .dark)
+/// ExampleView(colorScheme: EnvironmentOrValue(.dark))
 /// ```
 @frozen
 @propertyWrapper

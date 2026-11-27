@@ -85,7 +85,7 @@ Then add **both products** to your target's `dependencies`:
 | `ShapeStyleBuilder`, `View.foregroundStyle(_:)` builder overload | `SwiftUIHelpers` |
 | `View.hidden(for: DynamicTypeSize...)` | `SwiftUIHelpers` |
 | `View.onTouchDownGesture(_:)` | `SwiftUIHelpers` |
-| `View.position(point:in:)` | `SwiftUIHelpers` |
+| `View.position(point:)` | `SwiftUIHelpers` |
 
 ---
 
@@ -146,18 +146,32 @@ Image("logo").resizable(contentMode: .fit)
 
 ```swift
 // StateOrBinding — use the same view whether you own the state or receive a binding
-@StateOrBinding var text: String = "initial"
+struct NameField: View {
+    @StateOrBinding var text: String
 
-// EnvironmentOrValue — fall back to a literal when no environment is injected
-@EnvironmentOrValue(\.colorScheme) var scheme: ColorScheme = .light
+    init() { _text = StateOrBinding("initial") }              // owns its state
+    init(text: Binding<String>) { _text = StateOrBinding(text) } // uses the caller's binding
 
-// StatefulContainer — drives a child view with an @State wrapper
-StatefulContainer(initialValue: 0) { $count in
+    var body: some View { TextField("Name", text: $text) }
+}
+
+// EnvironmentOrValue — read the environment unless the caller passes a value
+struct SchemeBadge: View {
+    @EnvironmentOrValue(\.colorScheme) var scheme
+
+    var body: some View { Text(scheme == .dark ? "Dark" : "Light") }
+}
+SchemeBadge()                                         // follows the environment
+SchemeBadge(scheme: EnvironmentOrValue(.dark))        // fixed value
+
+// StatefulContainer — owns an @State value and hands its binding to the content
+StatefulContainer(0) { $count in
     Stepper("Count: \(count)", value: $count)
 }
 
-// SelectableArray — array + selection index as a single @State value
-@State var items = SelectableArray(elements: myList)
+// SelectableArray — array + selected element as a single @State value
+@State var items = SelectableArray(myList)                       // selects the first element
+@State var picked = SelectableArray(myList, selectionIndex: 2)   // or pick the selection
 ```
 
 ### Scroll helpers (`SwiftUIHelpers`)

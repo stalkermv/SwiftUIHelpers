@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented in this file.
 
+## Unreleased
+
+### Added
+
+- `View.position(point:)` places the center of a view at a unit point of the space it is offered, such as `.topTrailing`.
+
+### Deprecated
+
+- `View.position(point:in:)`. Now that the coordinate space no longer changes where the view lands, use `position(point:)`.
+
+### Fixed
+
+- `position(point:in:)` places the view correctly when the frame is measured in `.global` or a named coordinate space. The point is now converted back to the parent's local coordinates before positioning; before, a nonlocal frame origin was added on top and the view landed off target.
+- README examples for `StateOrBinding`, `EnvironmentOrValue`, `StatefulContainer` and `SelectableArray` now match the public API and compile. The `EnvironmentOrValue` documentation shows how to pass an explicit value.
+
 ## 2.0.0-beta.3 - 2026-11-24
 
 ### Changed
